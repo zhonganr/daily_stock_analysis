@@ -56,6 +56,9 @@ class Config:
     feishu_app_secret: Optional[str] = None
     feishu_folder_token: Optional[str] = None  # 目标文件夹 Token
     
+    # === 数据源配置 ===
+    tushare_token: Optional[str] = None  # Tushare Pro API Token
+    
     # === AI 分析配置 ===
     # LiteLLM unified model config (provider/model format, e.g. gemini/gemini-2.5-flash)
     litellm_model: str = ""  # Primary model; must include provider prefix when set explicitly
