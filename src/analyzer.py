@@ -21,6 +21,7 @@ from json_repair import repair_json
 from litellm import Router
 
 from src.agent.llm_adapter import get_thinking_extra_body
+from src.analyzer_prompts import get_system_prompt
 from src.config import Config, get_config
 
 logger = logging.getLogger(__name__)
@@ -511,15 +512,7 @@ class GeminiAnalyzer:
 - ❌ 空头排列
 - ❌ 跌破MA20
 - ❌ 放量下跌
-- ❌ 重大利空
-
-## 决策仪表盘核心原则
-
-1. **核心结论先行**：一句话说清该买该卖
-2. **分持仓建议**：空仓者和持仓者给不同建议
-3. **精确狙击点**：必须给出具体价格，不说模糊的话
-4. **检查清单可视化**：用 ✅⚠️❌ 明确显示每项检查结果
-5. **风险优先级**：舆情中的风险点要醒目标出"""
+    """
 
     def __init__(self, api_key: Optional[str] = None):
         """Initialize LLM Analyzer via LiteLLM.
@@ -532,6 +525,11 @@ class GeminiAnalyzer:
         self._init_litellm()
         if not self._litellm_available:
             logger.warning("No LLM configured (LITELLM_MODEL / API keys), AI analysis will be unavailable")
+
+    def _get_system_prompt(self) -> str:
+        """Get system prompt based on report language configuration."""
+        config = get_config()
+        return get_system_prompt(config.report_language)
 
     @staticmethod
     def _get_api_keys_for_model(model: str, config: Config) -> List[str]:
@@ -627,7 +625,7 @@ class GeminiAnalyzer:
                 call_kwargs: Dict[str, Any] = {
                     "model": model,
                     "messages": [
-                        {"role": "system", "content": self.SYSTEM_PROMPT},
+                        {"role": "system", "content": self._get_system_prompt()},
                         {"role": "user", "content": prompt},
                     ],
                     "temperature": temperature,

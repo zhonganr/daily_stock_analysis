@@ -364,46 +364,21 @@ class DataFetcherManager:
         """
         初始化默认数据源列表
 
-        优先级动态调整逻辑：
-        - 如果配置了 TUSHARE_TOKEN：Tushare 优先级提升为 0（最高）
-        - 否则按默认优先级：
-          0. EfinanceFetcher (Priority 0) - 最高优先级
-          1. AkshareFetcher (Priority 1)
-          2. PytdxFetcher (Priority 2) - 通达信
-          2. TushareFetcher (Priority 2)
-          3. BaostockFetcher (Priority 3)
-          4. YfinanceFetcher (Priority 4)
+        仅支持全球市场（美股、港股等）：
+        - YfinanceFetcher (Priority 0) - 最高优先级
+        
+        注：已移除所有A股数据源（Tushare、AkShare、Baostock、Pytdx、EFinance）
         """
-        from .efinance_fetcher import EfinanceFetcher
-        from .akshare_fetcher import AkshareFetcher
-        from .tushare_fetcher import TushareFetcher
-        from .pytdx_fetcher import PytdxFetcher
-        from .baostock_fetcher import BaostockFetcher
         from .yfinance_fetcher import YfinanceFetcher
         from src.config import get_config
 
         config = get_config()
 
-        # 创建所有数据源实例（优先级在各 Fetcher 的 __init__ 中确定）
-        efinance = EfinanceFetcher()
-        akshare = AkshareFetcher()
-        tushare = TushareFetcher()  # 会根据 Token 配置自动调整优先级
-        pytdx = PytdxFetcher()      # 通达信数据源（可配 PYTDX_HOST/PYTDX_PORT）
-        baostock = BaostockFetcher()
+        # 创建唯一数据源实例
         yfinance = YfinanceFetcher()
 
         # 初始化数据源列表
-        self._fetchers = [
-            efinance,
-            akshare,
-            tushare,
-            pytdx,
-            baostock,
-            yfinance,
-        ]
-
-        # 按优先级排序（Tushare 如果配置了 Token 且初始化成功，优先级为 0）
-        self._fetchers.sort(key=lambda f: f.priority)
+        self._fetchers = [yfinance]
 
         # 构建优先级说明
         priority_info = ", ".join([f"{f.name}(P{f.priority})" for f in self._fetchers])

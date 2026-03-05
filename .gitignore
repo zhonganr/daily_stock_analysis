@@ -10,6 +10,9 @@
 /test_*.py
 !test_env.py
 
+# 演示和开发脚本（不需要提交的临时文件）
+/FOREX_USAGE_GUIDE.md
+
 # Python
 __pycache__/
 *.py[cod]

@@ -99,7 +99,7 @@ Go to your forked repo → `Settings` → `Secrets and variables` → `Actions` 
 
 | Secret Name | Description | Required |
 |------------|------|:----:|
-| `STOCK_LIST` | Watchlist codes, e.g., `600519,300750,002594` | ✅ |
+| `STOCK_LIST` | Watchlist codes (comma-separated), supports US stocks, HK stocks, Euronext, Forex. Example: `AAPL,TSLA,0700.HK,OR.PA,EURCNY,USDCNY` | ✅ |
 | `TAVILY_API_KEYS` | [Tavily](https://tavily.com/) Search API (for news search) | Recommended |
 | `BOCHA_API_KEYS` | [Bocha Search](https://open.bocha.cn/) Web Search API (Chinese search optimized, supports AI summaries, multiple keys comma-separated) | Optional |
 | `SERPAPI_API_KEYS` | [SerpAPI](https://serpapi.com/baidu-search-api?utm_source=github_daily_stock_analysis) Backup search | Optional |
@@ -207,7 +207,7 @@ Default schedule: Every weekday at **18:00 (Beijing Time)** automatic execution.
 
 | Variable | Description | Default |
 |--------|------|--------|
-| `STOCK_LIST` | Watchlist codes (comma-separated) | - |
+| `STOCK_LIST` | Watchlist codes (comma-separated), supports US stocks, HK stocks, Euronext, Forex. Example: `AAPL,0700.HK,OR.PA,EURCNY,USDCNY` | - |
 | `MAX_WORKERS` | Concurrent threads | `3` |
 | `MARKET_REVIEW_ENABLED` | Enable market review | `true` |
 | `MARKET_REVIEW_REGION` | Market review region: cn (A-shares), us (US stocks), both | `cn` |
@@ -495,13 +495,20 @@ System defaults to AkShare (free), also supports other data sources:
 
 ## Advanced Features
 
-### Hong Kong Stock Support
+### Global Markets Support
 
-Use `hk` prefix for HK stock codes:
+The system supports mixed configuration of various global markets:
 
 ```bash
-STOCK_LIST=600519,hk00700,hk01810
+# US stocks, HK stocks, Euronext, Forex mixed
+STOCK_LIST=AAPL,TSLA,0700.HK,OR.PA,ASML.AS,EURCNY,USDCNY
 ```
+
+**Supported formats:**
+- **US stocks**: AAPL, TSLA, BRK.B etc.
+- **HK stocks**: 0700.HK, 2388.HK etc.
+- **Euronext**: OR.PA (France), ASML.AS (Netherlands), GBT.BR (Belgium) etc.
+- **Forex**: EURCNY (EUR/CNY), USDCNY (USD/CNY), GBPCNY etc.
 
 ### Multi-Model Switching
 

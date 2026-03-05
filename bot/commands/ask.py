@@ -79,14 +79,20 @@ class AskCommand(BotCommand):
             return "请输入股票代码。用法: /ask <股票代码> [策略名称]\n示例: /ask 600519 用缠论分析"
 
         code = args[0].upper()
-        is_a_stock = re.match(r"^\d{6}$", code)
-        is_hk_stock = re.match(r"^HK\d{5}$", code)
-        is_us_stock = re.match(r"^[A-Z]{1,5}(\.[A-Z]{1,2})?$", code)
-
-        if not (is_a_stock or is_hk_stock or is_us_stock):
-            return f"无效的股票代码: {code}（A股6位数字 / 港股HK+5位数字 / 美股1-5个字母）"
-
-        return None
+        
+        # 使用导入的全局验证函数
+        from data_provider import is_global_stock, is_forex_pair
+        from data_provider import is_us_index_code
+        
+        # 检查是否是美股指数（排除）
+        if is_us_index_code(code):
+            return f"不支持美股指数代码: {code}（请输入具体股票代码）"
+        
+        # 检查是否是有效的全球股票或外汇对
+        if is_global_stock(code):
+            return None
+        
+        return f"无效的股票代码: {code}（支持: 港股0000.HK / 美股 / Euronext / 外汇）"
 
     def _parse_strategy(self, args: List[str]) -> str:
         """Parse strategy from arguments, returning strategy id."""

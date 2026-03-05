@@ -9,47 +9,39 @@
 2. 自动故障切换
 3. 防封禁流控策略
 
-数据源优先级（动态调整）：
-【配置了 TUSHARE_TOKEN 时】
-1. TushareFetcher (Priority 0) - 🔥 最高优先级（动态提升）
-2. EfinanceFetcher (Priority 0) - 同优先级
-3. AkshareFetcher (Priority 1) - 来自 akshare 库
-4. PytdxFetcher (Priority 2) - 来自 pytdx 库（通达信）
-5. BaostockFetcher (Priority 3) - 来自 baostock 库
-6. YfinanceFetcher (Priority 4) - 来自 yfinance 库
+数据源优先级（针对全球股市）：
+1. YfinanceFetcher (Priority 0) - 最高优先级，用于美股、港股、其他全球市场
 
-【未配置 TUSHARE_TOKEN 时】
-1. EfinanceFetcher (Priority 0) - 最高优先级，来自 efinance 库
-2. AkshareFetcher (Priority 1) - 来自 akshare 库
-3. PytdxFetcher (Priority 2) - 来自 pytdx 库（通达信）
-4. TushareFetcher (Priority 2) - 来自 tushare 库（不可用）
-5. BaostockFetcher (Priority 3) - 来自 baostock 库
-6. YfinanceFetcher (Priority 4) - 来自 yfinance 库
-
-提示：优先级数字越小越优先，同优先级按初始化顺序排列
+提示：仅支持全球市场（美股、港股等），已移除A股数据源。
 """
 
 from .base import BaseFetcher, DataFetcherManager
-from .efinance_fetcher import EfinanceFetcher
-from .akshare_fetcher import AkshareFetcher, is_hk_stock_code
-from .tushare_fetcher import TushareFetcher
-from .pytdx_fetcher import PytdxFetcher
-from .baostock_fetcher import BaostockFetcher
 from .yfinance_fetcher import YfinanceFetcher
-from .us_index_mapping import is_us_index_code, is_us_stock_code, get_us_index_yf_symbol, US_INDEX_MAPPING
+from .us_index_mapping import (
+    is_us_index_code, 
+    is_us_stock_code, 
+    is_euronext_stock,
+    is_forex_pair,
+    is_global_stock,
+    get_us_index_yf_symbol,
+    get_forex_yf_symbol,
+    US_INDEX_MAPPING,
+    GLOBAL_MARKET_SUFFIXES,
+    FOREX_PAIRS
+)
 
 __all__ = [
     'BaseFetcher',
     'DataFetcherManager',
-    'EfinanceFetcher',
-    'AkshareFetcher',
-    'TushareFetcher',
-    'PytdxFetcher',
-    'BaostockFetcher',
     'YfinanceFetcher',
     'is_us_index_code',
     'is_us_stock_code',
-    'is_hk_stock_code',
+    'is_euronext_stock',
+    'is_forex_pair',
+    'is_global_stock',
     'get_us_index_yf_symbol',
+    'get_forex_yf_symbol',
     'US_INDEX_MAPPING',
+    'GLOBAL_MARKET_SUFFIXES',
+    'FOREX_PAIRS',
 ]

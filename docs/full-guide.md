@@ -104,7 +104,7 @@ daily_stock_analysis/
 
 | Secret 名称 | 说明 | 必填 |
 |------------|------|:----:|
-| `STOCK_LIST` | 自选股代码，如 `600519,300750,002594` | ✅ |
+| `STOCK_LIST` | 自选股代码（逗号分隔），支持美股、港股、Euronext、外汇。示例：`AAPL,TSLA,0700.HK,OR.PA,EURCNY,USDCNY` | ✅ |
 | `TAVILY_API_KEYS` | [Tavily](https://tavily.com/) 搜索 API（新闻搜索） | 推荐 |
 | `BOCHA_API_KEYS` | [博查搜索](https://open.bocha.cn/) Web Search API（中文搜索优化，支持AI摘要，多个key用逗号分隔） | 可选 |
 | `BRAVE_API_KEYS` | [Brave Search](https://brave.com/search/api/) API（隐私优先，美股优化，多个key用逗号分隔） | 可选 |
@@ -228,7 +228,7 @@ daily_stock_analysis/
 
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
-| `STOCK_LIST` | 自选股代码（逗号分隔） | - |
+| `STOCK_LIST` | 自选股代码（逗号分隔），支持美股、港股、Euronext、外汇。示例：`AAPL,0700.HK,OR.PA,EURCNY,USDCNY` | - |
 | `ADMIN_AUTH_ENABLED` | Web 登录：设为 `true` 启用密码保护；首次访问在网页设置初始密码，可在「系统设置 > 修改密码」修改；忘记密码执行 `python -m src.auth reset_password` | `false` |
 | `TRUST_X_FORWARDED_FOR` | 反向代理部署时设为 `true`，从 `X-Forwarded-For` 获取真实 IP（限流等）；直连公网时保持 `false` 防伪造 | `false` |
 | `MAX_WORKERS` | 并发线程数 | `3` |
@@ -617,13 +617,20 @@ PUSHOVER_API_TOKEN=your_api_token
 
 ## 高级功能
 
-### 港股支持
+### 全球市场支持
 
-使用 `hk` 前缀指定港股代码：
+系统支持混合配置各类全球市场的代码：
 
 ```bash
-STOCK_LIST=600519,hk00700,hk01810
+# 美股、港股、Euronext、外汇混合
+STOCK_LIST=AAPL,TSLA,0700.HK,OR.PA,ASML.AS,EURCNY,USDCNY
 ```
+
+**支持的格式：**
+- **美股**：AAPL, TSLA, BRK.B 等
+- **港股**：0700.HK, 2388.HK 等
+- **Euronext**：OR.PA (法国), ASML.AS (荷兰), GBT.BR (比利时) 等
+- **外汇对**：EURCNY (欧元/人民币), USDCNY (美元/人民币), GBPCNY 等
 
 ### ETF 与指数分析
 

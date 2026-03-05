@@ -117,7 +117,7 @@ Go to your forked repo → `Settings` → `Secrets and variables` → `Actions` 
 
 | Secret Name | Description | Required |
 |------------|------|:----:|
-| `STOCK_LIST` | Watchlist codes, e.g., `600519,AAPL,hk00700` | ✅ |
+| `STOCK_LIST` | Watchlist codes (comma-separated), supports US stocks, HK stocks, Euronext, Forex. Example: `AAPL,TSLA,0700.HK,OR.PA,EURCNY,USDCNY` | ✅ |
 | `TAVILY_API_KEYS` | [Tavily](https://tavily.com/) Search API (for news) | Recommended |
 | `BRAVE_API_KEYS` | [Brave Search](https://brave.com/search/api/) API (privacy-focused, US stocks optimized) | Optional |
 | `SERPAPI_API_KEYS` | [SerpAPI](https://serpapi.com/baidu-search-api?utm_source=github_daily_stock_analysis) Backup search | Optional |
@@ -189,8 +189,8 @@ Configure the following:
 # AI Model (Choose one)
 GEMINI_API_KEY=your_gemini_api_key_here
 
-# Stock Watchlist (Mixed markets supported)
-STOCK_LIST=600519,AAPL,hk00700
+# Stock Watchlist (Global markets: US, HK, Euronext, Forex)
+STOCK_LIST=AAPL,TSLA,0700.HK,OR.PA,EURCNY,USDCNY
 
 # Notification Channel (Choose at least one)
 TELEGRAM_BOT_TOKEN=your_bot_token

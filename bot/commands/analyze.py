@@ -52,18 +52,25 @@ class AnalyzeCommand(BotCommand):
         
         code = args[0].upper()
 
-        # 验证股票代码格式
-        # A股：6位数字
-        # 港股：HK+5位数字
+        # 验证股票代码格式：港股、美股、Euronext、外汇
+        # 港股：0+4位数字+.HK
         # 美股：1-5个大写字母+.+2个后缀字母
-        is_a_stock = re.match(r'^\d{6}$', code)
-        is_hk_stock = re.match(r'^HK\d{5}$', code)
-        is_us_stock = re.match(r'^[A-Z]{1,5}(\.[A-Z]{1,2})?$', code)
-
-        if not (is_a_stock or is_hk_stock or is_us_stock):
-            return f"无效的股票代码: {code}（A股6位数字 / 港股HK+5位数字 / 美股1-5个字母）"
+        # Euronext: 1-6个字母+.+市场后缀(PA|AS|BR|DU|LI)
+        # 外汇：6个字母(如 EURCNY) 或 6个字母+X后缀(如 EURCNY=X)
         
-        return None
+        # 使用导入的全局验证函数
+        from data_provider import is_global_stock, is_forex_pair
+        
+        # 检查是否是美股指数（排除）
+        from data_provider import is_us_index_code
+        if is_us_index_code(code):
+            return f"不支持美股指数代码: {code}（请输入具体股票代码）"
+        
+        # 检查是否是有效的全球股票或外汇对
+        if is_global_stock(code):
+            return None
+        
+        return f"无效的股票代码: {code}（支持: 港股0000.HK / 美股 / Euronext / 外汇）"
     
     def execute(self, message: BotMessage, args: List[str]) -> BotResponse:
         """执行分析命令"""

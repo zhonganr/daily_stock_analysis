@@ -125,21 +125,11 @@ def compute_effective_region(
 
     Returns:
         None: caller uses config default (check disabled)
-        '': all relevant markets closed, skip market review
-        'cn' | 'us' | 'both': effective subset for today
+        '': US market closed, skip market review
+        'us': US market open
     """
-    if config_region not in ("cn", "us", "both"):
-        config_region = "cn"
-    if config_region == "cn":
-        return "cn" if "cn" in open_markets else ""
+    if config_region not in ("us",):
+        config_region = "us"
     if config_region == "us":
         return "us" if "us" in open_markets else ""
-    # both
-    parts = []
-    if "cn" in open_markets:
-        parts.append("cn")
-    if "us" in open_markets:
-        parts.append("us")
-    if not parts:
-        return ""
-    return "both" if len(parts) == 2 else parts[0]
+    return ""

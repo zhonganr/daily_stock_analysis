@@ -101,13 +101,13 @@ class MarketAnalyzer:
         Args:
             search_service: 搜索服务实例
             analyzer: AI分析器实例（用于调用LLM）
-            region: 市场区域 cn=A股 us=美股
+            region: 市场区域 us=美股
         """
         self.config = get_config()
         self.search_service = search_service
         self.analyzer = analyzer
         self.data_manager = DataFetcherManager()
-        self.region = region if region in ("cn", "us") else "cn"
+        self.region = "us"  # 仅支持美股
         self.profile: MarketProfile = get_profile(self.region)
         self.strategy = get_market_strategy_blueprint(self.region)
 
@@ -255,10 +255,10 @@ class MarketAnalyzer:
         search_queries = self.profile.news_queries
         
         try:
-            logger.info("[大盘] 开始搜索市场新闻...")
+            logger.info("[Market Review] 开始搜索市场新闻...")
             
-            # 根据 region 设置搜索上下文名称，避免美股搜索被解读为 A 股语境
-            market_name = "大盘" if self.region == "cn" else "US market"
+            # 搜索美股市场新闻
+            market_name = "US market"
             for query in search_queries:
                 response = self.search_service.search_stock_news(
                     stock_code="market",
@@ -661,7 +661,7 @@ Output the report content directly, no extra commentary.
 - **领涨**: {top_text}
 - **领跌**: {bottom_text}
 """
-        market_label = "A股" if self.region == "cn" else "美股"
+        market_label = "美股"  # 仅支持美股
         strategy_summary = self.strategy.to_markdown_block()
         report = f"""## {overview.date} 大盘复盘
 
