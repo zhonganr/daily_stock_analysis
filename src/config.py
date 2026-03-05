@@ -225,6 +225,8 @@ class Config:
     enable_realtime_quote: bool = True
     # 盘中实时技术面：启用时用实时价计算 MA/多头排列（Issue #234）；关闭则用昨日收盘
     enable_realtime_technical_indicators: bool = True
+    # 筹码分布分析开关（该接口不稳定，云端部署建议关闭）
+    enable_chip_distribution: bool = True
     # 实时行情数据源优先级（逗号分隔）
     realtime_source_priority: str = 'tencent,akshare_sina,efinance,akshare_em'
     # 实时行情缓存时间（秒）
@@ -563,6 +565,7 @@ class Config:
             enable_realtime_technical_indicators=os.getenv(
                 'ENABLE_REALTIME_TECHNICAL_INDICATORS', 'true'
             ).lower() == 'true',
+            enable_chip_distribution=os.getenv('ENABLE_CHIP_DISTRIBUTION', 'true').lower() == 'true',
             realtime_source_priority=cls._resolve_realtime_source_priority(),
             realtime_cache_ttl=int(os.getenv('REALTIME_CACHE_TTL', '600')),
             circuit_breaker_cooldown=int(os.getenv('CIRCUIT_BREAKER_COOLDOWN', '300'))
