@@ -167,32 +167,42 @@ test_code_recognition() {
     python3 << 'PYTEST'
 import sys
 sys.path.insert(0, '.')
-from data_provider.akshare_fetcher import _is_hk_code, _is_us_code
+from data_provider.akshare_fetcher import _is_hk_code, _is_us_code, _is_euronext_code, _is_forex_code
 
 test_cases = [
-    # (代码, 预期HK, 预期US, 描述)
-    ("AAPL", False, True, "美股-苹果"),
-    ("TSLA", False, True, "美股-特斯拉"),
-    ("BRK.B", False, True, "美股-伯克希尔B"),
-    ("hk00700", True, False, "港股-腾讯"),
-    ("HK09988", True, False, "港股-阿里"),
-    ("600519", False, False, "A股-茅台"),
-    ("000001", False, False, "A股-平安"),
+    # (代码, 预期HK, 预期US, 预期EURONEXT, 预期FOREX, 描述)
+    ("AAPL", False, True, False, False, "美股-苹果"),
+    ("TSLA", False, True, False, False, "美股-特斯拉"),
+    ("BRK.B", False, True, False, False, "美股-伯克希尔B"),
+    ("hk00700", True, False, False, False, "港股-腾讯"),
+    ("HK09988", True, False, False, False, "港股-阿里"),
+    ("BNP.PA", False, False, True, False, "欧洲-法国巴黎银行"),
+    ("TTE.PA", False, False, True, False, "欧洲-道达尔能源"),
+    ("OR.PA", False, False, True, False, "欧洲-欧莱雅"),
+    ("ASML.AS", False, False, True, False, "欧洲-荷兰阿斯麦"),
+    ("GBT.BR", False, False, True, False, "欧洲-比利时通用"),
+    ("EURCNY", False, False, False, True, "外汇-欧元人民币"),
+    ("USDCNY", False, False, False, True, "外汇-美元人民币"),
+    ("EURCNY=X", False, False, False, True, "外汇-欧元人民币(带X)"),
 ]
 
 print("\n股票代码识别测试:")
-print("-" * 60)
+print("-" * 100)
 all_pass = True
-for code, exp_hk, exp_us, desc in test_cases:
+for code, exp_hk, exp_us, exp_eu, exp_fx, desc in test_cases:
     is_hk = _is_hk_code(code)
     is_us = _is_us_code(code)
+    is_eu = _is_euronext_code(code)
+    is_fx = _is_forex_code(code)
     hk_ok = is_hk == exp_hk
     us_ok = is_us == exp_us
-    status = "✅" if (hk_ok and us_ok) else "❌"
-    all_pass = all_pass and hk_ok and us_ok
-    print(f"{status} {code:10} | HK:{is_hk:5} US:{is_us:5} | {desc}")
+    eu_ok = is_eu == exp_eu
+    fx_ok = is_fx == exp_fx
+    status = "✅" if (hk_ok and us_ok and eu_ok and fx_ok) else "❌"
+    all_pass = all_pass and hk_ok and us_ok and eu_ok and fx_ok
+    print(f"{status} {code:10} | HK:{str(is_hk):5} US:{str(is_us):5} EU:{str(is_eu):5} FX:{str(is_fx):5} | {desc}")
 
-print("-" * 60)
+print("-" * 100)
 print(f"{'✅ 所有测试通过!' if all_pass else '❌ 有测试失败!'}")
 sys.exit(0 if all_pass else 1)
 PYTEST

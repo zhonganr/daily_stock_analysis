@@ -156,7 +156,9 @@ class StockAnalysisPipeline:
 
         except Exception as e:
             error_msg = f"获取/保存数据失败: {str(e)}"
-            logger.error(f"{stock_name}({code}) {error_msg}")
+            # Use code if stock_name is not available (e.g., if get_stock_name() failed)
+            display_name = stock_name if 'stock_name' in locals() else code
+            logger.error(f"{display_name}({code}) {error_msg}")
             return False, error_msg
     
     def analyze_stock(self, code: str, report_type: ReportType, query_id: str) -> Optional[AnalysisResult]:
