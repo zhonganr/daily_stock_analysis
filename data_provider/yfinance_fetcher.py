@@ -30,7 +30,13 @@ from tenacity import (
 
 from .base import BaseFetcher, DataFetchError, STANDARD_COLUMNS
 from .realtime_types import UnifiedRealtimeQuote, RealtimeSource
-from .us_index_mapping import get_us_index_yf_symbol, is_us_index_code, is_us_stock_code, KNOWN_EURONEXT_STOCKS
+from .us_index_mapping import (
+    get_us_index_yf_symbol, 
+    get_forex_yf_symbol,
+    is_us_index_code, 
+    is_us_stock_code, 
+    KNOWN_EURONEXT_STOCKS
+)
 from .akshare_fetcher import _is_forex_code, _is_euronext_code
 import os
 
@@ -71,11 +77,11 @@ class YfinanceFetcher(BaseFetcher):
         - A股深市：000001.SZ (Shenzhen Stock Exchange)
         - 港股：0700.HK (Hong Kong Stock Exchange)
         - 美股：AAPL, TSLA, GOOGL (无需后缀)
-        - 外汇：EURCNY, USDCNY (无需后缀)
+        - 外汇：EURCNY=X, USDCNY=X (需要 =X 后缀)
         - 欧洲：BNP.PA, ASML.AS (已有后缀)
 
         Args:
-            stock_code: 原始代码，如 '600519', 'hk00700', 'AAPL'
+            stock_code: 原始代码，如 '600519', 'hk00700', 'AAPL', 'EURCNY'
 
         Returns:
             Yahoo Finance 格式代码
@@ -88,14 +94,17 @@ class YfinanceFetcher(BaseFetcher):
             >>> fetcher._convert_stock_code('AAPL')
             'AAPL'
             >>> fetcher._convert_stock_code('EURCNY')
-            'EURCNY'
+            'EURCNY=X'
+            >>> fetcher._convert_stock_code('BNP')
+            'BNP.PA'
         """
         code = stock_code.strip().upper()
 
-        # 外汇对：直接返回原样代码，不添加后缀
-        if _is_forex_code(code):
-            logger.debug(f"识别为外汇对代码: {code}")
-            return code
+        # 外汇对：转换为 Yahoo Finance 格式（如 EURCNY -> EURCNY=X）
+        yf_forex_symbol, _ = get_forex_yf_symbol(code)
+        if yf_forex_symbol:
+            logger.debug(f"识别为外汇对代码: {code} -> {yf_forex_symbol}")
+            return yf_forex_symbol
 
         # 欧洲交易所代码：已包含后缀，直接返回
         if _is_euronext_code(code):
