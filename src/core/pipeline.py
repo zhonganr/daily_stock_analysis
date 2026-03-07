@@ -183,6 +183,7 @@ class StockAnalysisPipeline:
         """
         try:
             # 获取股票名称（优先从实时行情获取真实名称）
+            from src.analyzer import STOCK_NAME_MAP
             stock_name = self.fetcher_manager.get_stock_name(code)
 
             # Step 1: 获取实时行情（量比、换手率等）- 使用统一入口，自动故障切换
@@ -190,9 +191,11 @@ class StockAnalysisPipeline:
             try:
                 realtime_quote = self.fetcher_manager.get_realtime_quote(code)
                 if realtime_quote:
-                    # 使用实时行情返回的真实股票名称
+                    # 使用实时行情返回的真实股票名称，但优先检查STOCK_NAME_MAP
                     if realtime_quote.name:
-                        stock_name = realtime_quote.name
+                        # 只有当代码不在STOCK_NAME_MAP中时，才使用实时行情的名称
+                        if code not in STOCK_NAME_MAP:
+                            stock_name = realtime_quote.name
                     # 兼容不同数据源的字段（有些数据源可能没有 volume_ratio）
                     volume_ratio = getattr(realtime_quote, 'volume_ratio', None)
                     turnover_rate = getattr(realtime_quote, 'turnover_rate', None)

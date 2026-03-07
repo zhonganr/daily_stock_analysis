@@ -1,4 +1,4 @@
-name: Daily Stock Analysis
+name: Daily Analysis
 
 on:
   # Scheduled trigger - every day at 18:00 Beijing time (UTC 10:00)

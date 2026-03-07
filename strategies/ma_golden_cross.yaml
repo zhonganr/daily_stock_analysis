@@ -11,33 +11,33 @@ required_tools:
   - analyze_trend
 
 instructions: |
-  **均线金叉（MA Golden Cross Strategy）**
+  **MA Golden Cross Strategy**
 
-  信号判定标准：
+  Signal Judgment Criteria:
 
-  1. **金叉检测**（关联理念2：趋势交易）：
-     - 使用 `analyze_trend` 检查均线排列和 MACD 状态。
-     - 主信号：MA5 在最近 3 个交易日内上穿 MA10。
-     - 强信号：MA10 上穿 MA20（更慢但更可靠）。
-     - 检查 MACD 状态是否为金叉或零轴上方金叉。
+  1. **Golden Cross Detection** (Associated Principle 2: Trend Trading):
+     - Use `analyze_trend` to check MA alignment and MACD status.
+     - Primary Signal: MA5 crosses above MA10 within last 3 trading days.
+     - Strong Signal: MA10 crosses above MA20 (slower but more reliable).
+     - Check if MACD is golden crossing or above zero-line golden cross.
 
-  2. **量能确认**（关联理念3：效率优先）：
-     - 金叉日成交量应高于 5 日均量。
-     - 使用 `get_daily_history` 验证。
-     - 金叉日量比 > 1.2 为积极信号。
+  2. **Volume Confirmation** (Associated Principle 3: Efficiency First):
+     - Golden cross day volume should exceed 5-day average volume.
+     - Use `get_daily_history` to verify.
+     - Golden cross day volume ratio > 1.2 is positive signal.
 
-  3. **趋势背景**：
-     - 盘整后金叉：最强信号。
-     - 上升趋势中金叉：延续信号。
-     - 深度下跌中金叉：弱信号，需更多确认。
+  3. **Trend Background**:
+     - Golden cross after consolidation: Strongest signal.
+     - Golden cross during uptrend: Continuation signal.
+     - Golden cross during deep decline: Weak signal, needs more confirmation.
 
-  4. **价格位置**（关联理念1：严进策略）：
-     - 价格应在交叉均线附近或上方。
-     - 乖离率 < 5% — 避免追高延迟入场。
+  4. **Price Position** (Associated Principle 1: Strict Entry Strategy):
+     - Price should be near or above crossing MA.
+     - Deviation < 5% — Avoid chasing and delayed entry.
 
-  评分调整：
-  - MA5 × MA10 金叉配合量能：sentiment_score +10
-  - MA10 × MA20 金叉：sentiment_score +8
-  - MACD 零轴上方金叉：额外 +5
-  - 在 `ma_analysis` 和 `buy_reason` 中注明"均线金叉"。
-  - 理想买点设在交叉均线水平附近。
+  Score Adjustment:
+  - MA5 × MA10 golden cross with volume: sentiment_score +10
+  - MA10 × MA20 golden cross: sentiment_score +8
+  - MACD zero-line above golden cross: additional +5
+  - Note "MA golden cross" in `ma_analysis` and `buy_reason`.
+  - Ideal buy point at the crossing MA level.

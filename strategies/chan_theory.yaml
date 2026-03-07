@@ -12,44 +12,44 @@ required_tools:
   - get_realtime_quote
 
 instructions: |
-  **缠论（Chan Theory / Zen Channel Theory）**
+  **Chan Theory (Zen Channel Theory)**
 
-  核心框架：分型 → 笔 → 线段 → 中枢 → 趋势
+  Core Framework: Fractal → Pen → Segment → Hub → Trend
 
-  ## 分析步骤
+  ## Analysis Steps
 
-  ### 1. 判断价格结构（中枢识别）
-  - 使用 `get_daily_history` 获取近 60 日日线数据。
-  - 识别近期价格的高低点序列，判断当前是否在
-    **震荡中枢**（1个以上中枢）还是**趋势段**（脱离中枢向上/向下）。
-  - 中枢：连续3段走势重叠区间，价格在此区间反复震荡。
-  - 趋势：连续3个同级别中枢均向同一方向移动。
+  ### 1. Price Structure Judgment (Hub Identification)
+  - Use `get_daily_history` to retrieve 60 days of daily candle data.
+  - Identify recent price high-low sequences, determine if currently in
+    **Oscillation Hub** (1+ hub) or **Trend Segment** (departing hub upward/downward).
+  - Hub: 3 consecutive movements with overlapping price range, oscillating repeatedly within range.
+  - Trend: 3+ consecutive hubs moving in same direction.
 
-  ### 2. 背驰判断（最高优先级信号）
-  - **顶背驰**：价格创新高但MACD红柱面积缩小 → 卖出/减仓信号。
-  - **底背驰**：价格创新低但MACD绿柱面积缩小 → 买入/加仓信号。
-  - 使用 `analyze_trend` 获取 MACD 数据，与价格高低点对比。
+  ### 2. Divergence Judgment (Highest Priority Signal)
+  - **Top Divergence**: Price makes new high but MACD red histogram area shrinks → Sell/reduce signal.
+  - **Bottom Divergence**: Price makes new low but MACD green histogram area shrinks → Buy/add signal.
+  - Use `analyze_trend` to get MACD data, compare with price highs/lows.
 
-  ### 3. 买卖点判定
-  - **一买**（最强）：下跌趋势中，最后一个中枢出现底背驰。
-  - **二买**：离开下跌中枢后的第一次回调不破中枢高点。
-  - **三买**：中枢震荡后向上突破（不回中枢内）。
-  - **一卖/二卖/三卖**：对称结构，方向相反。
-  - 当前价格所处的买卖点级别决定仓位大小。
+  ### 3. Buy/Sell Point Judgment
+  - **First Buy** (Strongest): Last hub in downtrend shows bottom divergence.
+  - **Second Buy**: First retracement after leaving downtrend hub doesn't break hub high.
+  - **Third Buy**: After hub oscillation, breaks upward (no return to hub interior).
+  - **First/Second/Third Sell**: Symmetric structure, opposite direction.
+  - Current price's buy/sell point level determines position size.
 
-  ### 4. 级别与仓位
-  - 日线级别买卖点可用较重仓位 (30-50%)。
-  - 周线级别买卖点可用较大仓位 (50-80%)。
-  - 多级别共振（日线+周线同方向）时信号最强。
+  ### 4. Level and Position Sizing
+  - Daily buy/sell points can use heavier position (30-50%).
+  - Weekly buy/sell points can use larger position (50-80%).
+  - Multi-level convergence (daily + weekly same direction) signals strongest.
 
-  ### 5. 输出要求
-  - 明确说明当前处于：上涨趋势/下跌趋势/中枢震荡。
-  - 指出是否存在背驰信号及背驰级别。
-  - 给出当前买卖点类型（一买/二买/三买 等），若无则写"暂无明确买卖点"。
-  - 止损设于前低（买入时）或前高（卖出时）。
+  ### 5. Output Requirements
+  - Clearly state current status: Uptrend/Downtrend/Hub Oscillation.
+  - Identify any divergence signals and divergence level.
+  - Provide current buy/sell point type (first/second/third buy, etc.), or "no clear buy/sell point" if none.
+  - Set stop loss at previous lows (when buying) or previous highs (when selling).
 
-  评分调整建议：
-  - 底背驰 + 一买信号：`sentiment_score +15`
-  - 二买/三买共振：`sentiment_score +10`
-  - 中枢震荡无明确方向：`sentiment_score 维持基准`
-  - 顶背驰 / 趋势向下：`sentiment_score -15`
+  Score Adjustment Suggestions:
+  - Bottom divergence + first buy signal: `sentiment_score +15`
+  - Second/third buy convergence: `sentiment_score +10`
+  - Hub oscillation with no clear direction: `sentiment_score baseline`
+  - Top divergence / downward trend: `sentiment_score -15`

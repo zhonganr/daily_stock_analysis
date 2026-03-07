@@ -1,80 +1,80 @@
-# 交易策略目录 / Trading Strategies
+# Trading Strategies Directory / 交易策略目录
 
-本目录存放 **自然语言策略文件**（YAML 格式）。系统启动时自动加载此目录下所有 `.yaml` 文件。
+This directory stores **natural language strategy files** (YAML format). All `.yaml` files in this directory are automatically loaded when the system starts.
 
-## 如何编写自定义策略
+## How to Write Custom Strategies
 
-只需创建一个 `.yaml` 文件，用中文（或任意语言）描述你的交易策略即可，**无需编写任何代码**。
+Simply create a `.yaml` file describing your trading strategy in natural language (English, Chinese, or any language), **no code needed**.
 
-### 最简模板
+### Minimal Template
 
 ```yaml
-name: my_strategy          # 唯一标识（英文，下划线连接）
-display_name: 我的策略      # 显示名称（中文）
-description: 简短描述策略用途
+name: my_strategy          # Unique identifier (English, underscore-separated)
+display_name: My Strategy  # Display name (can be in any language)
+description: Brief description of the strategy's purpose
 
 instructions: |
-  你的策略描述...
-  用自然语言写出判断标准、入场条件、出场条件等。
-  可以引用工具名称（如 get_daily_history、analyze_trend）来指导 AI 使用哪些数据。
+  Your strategy description...
+  Write in natural language: judgment criteria, entry conditions, exit conditions, etc.
+  You can reference tool names (such as get_daily_history, analyze_trend) to guide AI on which data tools to use.
 ```
 
-### 完整模板
+### Complete Template
 
 ```yaml
 name: my_strategy
-display_name: 我的策略
-description: 简短描述策略适用的市场场景
+display_name: My Strategy
+description: Brief description of the strategy's applicable market scenarios
 
-# 策略分类：trend（趋势）、pattern（形态）、reversal（反转）、framework（框架）
+# Strategy category: trend, pattern, reversal, framework
 category: trend
 
-# 关联的核心交易理念编号（1-7），可选
+# Associated core trading principles (1-7), optional
 core_rules: [1, 2]
 
-# 策略需要使用的工具列表，可选
-# 可用工具：get_daily_history, analyze_trend, get_realtime_quote,
-#           get_sector_rankings, search_stock_news
+# List of tools required by the strategy, optional
+# Available tools: get_daily_history, analyze_trend, get_realtime_quote,
+#                  get_sector_rankings, search_stock_news
 required_tools:
   - get_daily_history
   - analyze_trend
 
-# 策略详细说明（自然语言，支持 Markdown 格式）
+# Strategy detailed description (natural language, supports Markdown format)
 instructions: |
-  **我的策略名称**
+  **My Strategy Name**
 
-  判断标准：
+  Judgment Criteria:
 
-  1. **条件一**：
-     - 使用 `analyze_trend` 检查均线排列。
-     - 描述你期望看到的趋势特征...
+  1. **Condition One**:
+     - Use `analyze_trend` to check MA alignment.
+     - Describe the trend characteristics you expect to see...
 
-  2. **条件二**：
-     - 描述量能要求...
+  2. **Condition Two**:
+     - Describe volume requirements...
 
-  评分调整：
-  - 满足条件时建议的 sentiment_score 调整
-  - 在 `buy_reason` 中注明策略名称
+  Score Adjustment:
+  - sentiment_score adjustment when conditions are met
+  - Note the strategy name in `buy_reason`
 ```
 
-### 核心交易理念参考
+### Core Trading Principles Reference
 
-| 编号 | 理念 |
-|------|------|
-| 1 | 严进策略：乖离率 < 5% 才考虑入场 |
-| 2 | 趋势交易：MA5 > MA10 > MA20 多头排列 |
-| 3 | 效率优先：量能确认趋势有效性 |
-| 4 | 买点偏好：优先回踩均线支撑 |
-| 5 | 风险排查：利空新闻一票否决 |
-| 6 | 量价配合：成交量验证价格运动 |
-| 7 | 强势趋势股放宽：龙头股可适当放宽标准 |
+| Number | Principle |
+|--------|-----------|
+| 1 | Strict Entry Strategy: Deviation < 5% before considering entry |
+| 2 | Trend Trading: MA5 > MA10 > MA20 bullish alignment |
+| 3 | Efficiency First: Volume confirms trend validity |
+| 4 | Entry Preference: Retracement to MA support preferred |
+| 5 | Risk Check: Bad news veto single factor |
+| 6 | Volume-Price Coordination: Volume confirms price movement |
+| 7 | Strong Trend Relaxation: Sector leaders can use relaxed standards |
 
-## 自定义策略目录
+## Custom Strategy Directory
 
-除了本目录（内置策略），你还可以通过环境变量指定额外的自定义策略目录：
+In addition to this directory (built-in strategies), you can specify additional custom strategy directories via environment variables:
 
 ```env
 AGENT_STRATEGY_DIR=./my_strategies
 ```
 
-系统会同时加载内置策略和自定义策略。如果名称冲突，自定义策略覆盖内置策略。
+The system will load both built-in and custom strategies. If names conflict, custom strategies override built-in strategies.
