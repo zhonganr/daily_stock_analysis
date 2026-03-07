@@ -418,15 +418,24 @@ class DataFetcherManager:
         Raises:
             DataFetchError: 所有数据源都失败时抛出
         """
-        from .us_index_mapping import is_us_index_code, is_us_stock_code
+        from .us_index_mapping import is_us_index_code, is_us_stock_code, is_euronext_stock, is_forex_pair, KNOWN_EURONEXT_STOCKS
+        from .akshare_fetcher import _is_euronext_code, _is_forex_code
 
         # Normalize code (strip SH/SZ prefix etc.)
         stock_code = normalize_stock_code(stock_code)
 
         errors = []
 
+        # 检查是否为 Euronext 股票（需要在美股检查之前）
+        code_upper = stock_code.strip().upper()
+        is_euronext = is_euronext_stock(code_upper) or code_upper in KNOWN_EURONEXT_STOCKS or _is_euronext_code(code_upper)
+        
+        # 检查是否为外汇对
+        is_forex = is_forex_pair(code_upper) or _is_forex_code(code_upper)
+        
         # 快速路径：美股指数与美股股票直接路由到 YfinanceFetcher
-        if is_us_index_code(stock_code) or is_us_stock_code(stock_code):
+        # 但需要排除 Euronext 和外汇对
+        if not is_euronext and not is_forex and (is_us_index_code(stock_code) or is_us_stock_code(stock_code)):
             for fetcher in self._fetchers:
                 if fetcher.name == "YfinanceFetcher":
                     try:
