@@ -101,8 +101,9 @@ class YfinanceFetcher(BaseFetcher):
         code = stock_code.strip().upper()
 
         # 外汇对：转换为 Yahoo Finance 格式（如 EURCNY -> EURCNY=X）
-        yf_forex_symbol, _ = get_forex_yf_symbol(code)
-        if yf_forex_symbol:
+        forex_result = get_forex_yf_symbol(code)
+        if forex_result and forex_result[0]:
+            yf_forex_symbol = forex_result[0]
             logger.debug(f"识别为外汇对代码: {code} -> {yf_forex_symbol}")
             return yf_forex_symbol
 
@@ -113,7 +114,8 @@ class YfinanceFetcher(BaseFetcher):
 
         # 检查是否为已知 Euronext 股票（无后缀形式，如 BNP -> BNP.PA）
         if code in KNOWN_EURONEXT_STOCKS:
-            euronext_code = KNOWN_EURONEXT_STOCKS[code]
+            euronext_data = KNOWN_EURONEXT_STOCKS[code]
+            euronext_code = euronext_data[0]  # 带后缀的代码
             logger.debug(f"识别为已知欧洲股票: {code} -> {euronext_code}")
             return euronext_code
 

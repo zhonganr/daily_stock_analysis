@@ -82,6 +82,26 @@ STOCK_NAME_MAP = {
     '01299': '友邦保险',
     '00941': '中国移动',
     '00883': '中国海洋石油',
+    
+    # === Euronext (欧洲) ===
+    'BNP': 'BNP Paribas',
+    'BNP.PA': 'BNP Paribas',
+    'TTE': 'TotalEnergies',
+    'TTE.PA': 'TotalEnergies',
+    'OR': "L'Oréal",
+    'OR.PA': "L'Oréal",
+    'MC': 'LVMH',
+    'MC.PA': 'LVMH',
+    'RMS': 'Hermès',
+    'RMS.PA': 'Hermès',
+    'ASML': 'ASML',
+    'ASML.AS': 'ASML',
+    
+    # === Forex (外汇对) ===
+    'EURCNY': 'EUR/CNY',
+    'EURCNY=X': 'EUR/CNY',
+    'USDCNY': 'USD/CNY',
+    'USDCNY=X': 'USD/CNY',
 }
 
 

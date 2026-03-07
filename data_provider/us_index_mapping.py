@@ -48,39 +48,35 @@ GLOBAL_MARKET_SUFFIXES = {
     '.SZ': '深圳 (Shenzhen)',
 }
 
-# 支持的外汇对映射
+# 支持的外汇对映射 -> (Yahoo Finance 符号, 中文名称, 英文名称)
 FOREX_PAIRS = {
-    'EURCNY': ('EURCNY=X', '欧元/人民币'),
-    'EURCNY=X': ('EURCNY=X', '欧元/人民币'),
-    'USDCNY': ('USDCNY=X', '美元/人民币'),
-    'USDCNY=X': ('USDCNY=X', '美元/人民币'),
-    'EUR': ('EURCNY=X', '欧元/人民币'),  # 简写别名
-    'USD': ('USDCNY=X', '美元/人民币'),  # 简写别名 (注意：与美股代码冲突，需要上下文判断)
+    'EURCNY': ('EURCNY=X', '欧元/人民币', 'EUR/CNY'),
+    'EURCNY=X': ('EURCNY=X', '欧元/人民币', 'EUR/CNY'),
+    'USDCNY': ('USDCNY=X', '美元/人民币', 'USD/CNY'),
+    'USDCNY=X': ('USDCNY=X', '美元/人民币', 'USD/CNY'),
+    'EUR': ('EURCNY=X', '欧元/人民币', 'EUR/CNY'),  # 简写别名
+    'USD': ('USDCNY=X', '美元/人民币', 'USD/CNY'),  # 简写别名 (注意：与美股代码冲突，需要上下文判断)
 }
 
-# 已知 Euronext 股票映射（无后缀代码 -> 带后缀代码）
-# 这解决了"BNP"等无后缀代码被误认为美股的问题
+# 已知 Euronext 股票映射（无后缀代码 -> (带后缀代码, 中文名称, 英文名称)）
 KNOWN_EURONEXT_STOCKS = {
     # France (Paris) - .PA
-    'BNP': 'BNP.PA',       # BNP Paribas
-    'TTE': 'TTE.PA',       # TotalEnergies
-    'OR': 'OR.PA',         # L'Oréal
-    'MC': 'MC.PA',         # LVMH
-    'RMS': 'RMS.PA',       # Hermès
+    'BNP': ('BNP.PA', 'BNP Paribas', 'BNP Paribas'),
+    'TTE': ('TTE.PA', 'TotalEnergies', 'TotalEnergies'),
+    'OR': ('OR.PA', "L'Oréal", "L'Oréal"),
+    'MC': ('MC.PA', 'LVMH', 'LVMH'),
+    'RMS': ('RMS.PA', 'Hermès', 'Hermès'),
     
     # Netherlands (Amsterdam) - .AS
-    'ASML': 'ASML.AS',     # ASML Holding
-    'AEX': 'AEX.AS',       # Amsterdam Exchange Index
-    'RDSA': 'RDSA.AS',     # Royal Dutch Shell A
+    'ASML': ('ASML.AS', 'ASML', 'ASML'),
+    'AEX': ('AEX.AS', 'Amsterdam Exchange Index', 'Amsterdam Exchange Index'),
+    'RDSA': ('RDSA.AS', 'Royal Dutch Shell', 'Royal Dutch Shell'),
     
     # Belgium (Brussels) - .BR
-    'GBT': 'GBT.BR',       # GBT Tokenize
+    'GBT': ('GBT.BR', 'GBT', 'GBT'),
     
     # Ireland (Dublin) - .DU
-    'CRH': 'CRH.DU',       # CRH plc
-    
-    # Portugal (Lisbon) - .LI
-    # (添加更多葡萄牙股票)
+    'CRH': ('CRH.DU', 'CRH plc', 'CRH'),
 }
 
 
