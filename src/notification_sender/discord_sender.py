@@ -49,12 +49,23 @@ class DiscordSender:
         Returns:
             是否发送成功
         """
+        # Guard: 空内容直接返回失败
+        if not content or not content.strip():
+            logger.warning("Discord 消息内容为空，跳过发送")
+            return False
+        
         # 分割内容，避免单条消息超过 Discord 限制
         try:
             chunks = chunk_content_by_max_words(content, self._discord_max_words)
         except ValueError as e:
             logger.error(f"分割 Discord 消息失败: {e}, 尝试整段发送。")
             chunks = [content]
+
+        # Filter out empty chunks to prevent "Cannot send an empty message" error
+        chunks = [chunk for chunk in chunks if chunk and chunk.strip()]
+        if not chunks:
+            logger.warning("所有 Discord 消息块都为空，跳过发送")
+            return False
 
         # 优先使用 Webhook（配置简单，权限低）
         if self._discord_config['webhook_url']:
@@ -80,6 +91,11 @@ class DiscordSender:
         Returns:
             是否发送成功
         """
+        # Guard: 空内容不发送
+        if not content or not content.strip():
+            logger.warning("Discord Webhook 消息内容为空，跳过发送")
+            return False
+        
         try:
             payload = {
                 'content': content,
@@ -114,6 +130,11 @@ class DiscordSender:
         Returns:
             是否发送成功
         """
+        # Guard: 空内容不发送
+        if not content or not content.strip():
+            logger.warning("Discord Bot 消息内容为空，跳过发送")
+            return False
+        
         try:
             headers = {
                 'Authorization': f'Bot {self._discord_config["bot_token"]}',
