@@ -530,8 +530,8 @@ class StockAnalysisPipeline:
             if chip_data:
                 initial_context["chip_distribution"] = self._safe_to_dict(chip_data)
 
-            # 运行 Agent
-            message = f"请分析股票 {code} ({stock_name})，并生成决策仪表盘报告。"
+            # Run Agent
+            message = f"Please analyze stock {code} ({stock_name}) and generate a Decision Dashboard report."
             agent_result = executor.run(message, context=initial_context)
 
             # 转换为 AnalysisResult
