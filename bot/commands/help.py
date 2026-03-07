@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-帮助命令
+Help Command
 ===================================
 
-显示可用命令列表和使用说明。
+Displays list of available commands and usage instructions.
 """
 
 from typing import List
@@ -15,14 +15,14 @@ from bot.models import BotMessage, BotResponse
 
 class HelpCommand(BotCommand):
     """
-    帮助命令
+    Help Command
     
-    显示所有可用命令的列表和使用说明。
-    也可以查看特定命令的详细帮助。
+    Displays list of all available commands and usage instructions.
+    Can also view detailed help for specific commands.
     
-    用法：
-        /help         - 显示所有命令
-        /help analyze - 显示 analyze 命令的详细帮助
+    Usage:
+        /help         - Show all commands
+        /help analyze - Show detailed help for analyze command
     """
     
     @property
@@ -31,15 +31,15 @@ class HelpCommand(BotCommand):
     
     @property
     def aliases(self) -> List[str]:
-        return ["h", "帮助", "?"]
+        return ["h", "help", "?"]
     
     @property
     def description(self) -> str:
-        return "显示帮助信息"
+        return "Show help information"
     
     @property
     def usage(self) -> str:
-        return "/help [命令名]"
+        return "/help [command_name]"
     
     def execute(self, message: BotMessage, args: List[str]) -> BotResponse:
         """执行帮助命令"""

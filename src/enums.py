@@ -38,8 +38,8 @@ class ReportType(str, Enum):
     
     @property
     def display_name(self) -> str:
-        """获取用于显示的名称"""
+        """Get display name for reporting"""
         return {
-            ReportType.SIMPLE: "精简报告",
-            ReportType.FULL: "完整报告",
-        }.get(self, "精简报告")
+            ReportType.SIMPLE: "Simple Report",
+            ReportType.FULL: "Full Report",
+        }.get(self, "Simple Report")

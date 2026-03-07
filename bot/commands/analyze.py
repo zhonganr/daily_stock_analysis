@@ -20,13 +20,13 @@ logger = logging.getLogger(__name__)
 
 class AnalyzeCommand(BotCommand):
     """
-    股票分析命令
+    Stock Analysis Command
     
-    分析指定股票代码，生成 AI 分析报告并推送。
+    Analyze specified stock code and generate AI analysis report.
     
-    用法：
-        /analyze 600519       - 分析贵州茅台（精简报告）
-        /analyze 600519 full  - 分析并生成完整报告
+    Usage:
+        /analyze 600519       - Analyze Moutai (simple report)
+        /analyze 600519 full  - Analyze and generate full report
     """
     
     @property
@@ -35,61 +35,61 @@ class AnalyzeCommand(BotCommand):
     
     @property
     def aliases(self) -> List[str]:
-        return ["a", "分析", "查"]
+        return ["a", "analyze", "analysis"]
     
     @property
     def description(self) -> str:
-        return "分析指定股票"
+        return "Analyze specified stock"
     
     @property
     def usage(self) -> str:
-        return "/analyze <股票代码> [full]"
+        return "/analyze <stock_code> [full]"
     
     def validate_args(self, args: List[str]) -> Optional[str]:
-        """验证参数"""
+        """Validate arguments"""
         if not args:
-            return "请输入股票代码"
+            return "Please provide a stock code"
         
         code = args[0].upper()
 
-        # 验证股票代码格式：港股、美股、Euronext、外汇
-        # 港股：0+4位数字+.HK
-        # 美股：1-5个大写字母+.+2个后缀字母
-        # Euronext: 1-6个字母+.+市场后缀(PA|AS|BR|DU|LI)
-        # 外汇：6个字母(如 EURCNY) 或 6个字母+X后缀(如 EURCNY=X)
+        # Validate stock code format: HK, US, Euronext, Forex
+        # HK: 0+4 digits+.HK
+        # US: 1-5 uppercase letters+.+2 suffix letters
+        # Euronext: 1-6 letters+.+market suffix(PA|AS|BR|DU|LI)
+        # Forex: 6 letters(e.g. EURCNY) or 6 letters+X suffix(e.g. EURCNY=X)
         
-        # 使用导入的全局验证函数
+        # Use imported validation functions
         from data_provider import is_global_stock, is_forex_pair
         
-        # 检查是否是美股指数（排除）
+        # Check if it's a US index (exclude)
         from data_provider import is_us_index_code
         if is_us_index_code(code):
-            return f"不支持美股指数代码: {code}（请输入具体股票代码）"
+            return f"US index codes not supported: {code} (please provide specific stock code)"
         
-        # 检查是否是有效的全球股票或外汇对
+        # Check if it's a valid global stock or forex pair
         if is_global_stock(code):
             return None
         
-        return f"无效的股票代码: {code}（支持: 港股0000.HK / 美股 / Euronext / 外汇）"
+        return f"Invalid stock code: {code} (supported: HK 0000.HK / US stocks / Euronext / Forex)"
     
     def execute(self, message: BotMessage, args: List[str]) -> BotResponse:
-        """执行分析命令"""
+        """Execute analysis command"""
         code = canonical_stock_code(args[0])
         
-        # 检查是否需要完整报告（默认精简，传 full/完整/详细 切换）
+        # Check if full report is needed (default simple, pass full/complete/detailed to switch)
         report_type = "simple"
-        if len(args) > 1 and args[1].lower() in ["full", "完整", "详细"]:
+        if len(args) > 1 and args[1].lower() in ["full", "complete", "detailed"]:
             report_type = "full"
-        logger.info(f"[AnalyzeCommand] 分析股票: {code}, 报告类型: {report_type}")
+        logger.info(f"[AnalyzeCommand] Analyzing stock: {code}, report type: {report_type}")
         
         try:
-            # 调用分析服务
+            # Call analysis service
             from src.services.task_service import get_task_service
             from src.enums import ReportType
             
             service = get_task_service()
             
-            # 提交异步分析任务
+            # Submit async analysis task
             result = service.submit_analysis(
                 code=code,
                 report_type=ReportType.from_str(report_type),
@@ -99,16 +99,16 @@ class AnalyzeCommand(BotCommand):
             if result.get("success"):
                 task_id = result.get("task_id", "")
                 return BotResponse.markdown_response(
-                    f"✅ **分析任务已提交**\n\n"
-                    f"• 股票代码: `{code}`\n"
-                    f"• 报告类型: {ReportType.from_str(report_type).display_name}\n"
-                    f"• 任务 ID: `{task_id[:20]}...`\n\n"
-                    f"分析完成后将自动推送结果。"
+                    f"✅ **Analysis Task Submitted**\n\n"
+                    f"• Stock Code: `{code}`\n"
+                    f"• Report Type: {ReportType.from_str(report_type).display_name}\n"
+                    f"• Task ID: `{task_id[:20]}...`\n\n"
+                    f"Results will be automatically sent when analysis is complete."
                 )
             else:
-                error = result.get("error", "未知错误")
-                return BotResponse.error_response(f"提交分析任务失败: {error}")
+                error = result.get("error", "Unknown error")
+                return BotResponse.error_response(f"Failed to submit analysis task: {error}")
                 
         except Exception as e:
-            logger.error(f"[AnalyzeCommand] 执行失败: {e}")
-            return BotResponse.error_response(f"分析失败: {str(e)[:100]}")
+            logger.error(f"[AnalyzeCommand] Execution failed: {e}")
+            return BotResponse.error_response(f"Analysis failed: {str(e)[:100]}")

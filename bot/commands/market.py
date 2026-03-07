@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-大盘复盘命令
+Market Review Command
 ===================================
 
-执行大盘复盘分析，生成市场概览报告。
+Execute market review analysis and generate market overview report.
 """
 
 import logging
@@ -19,16 +19,16 @@ logger = logging.getLogger(__name__)
 
 class MarketCommand(BotCommand):
     """
-    大盘复盘命令
+    Market Review Command
     
-    执行大盘复盘分析，包括：
-    - 主要指数表现
-    - 板块热点
-    - 市场情绪
-    - 后市展望
+    Execute market review analysis including:
+    - Major index performance
+    - Sector highlights
+    - Market sentiment
+    - Outlook
     
-    用法：
-        /market - 执行大盘复盘
+    Usage:
+        /market - Execute market review
     """
 
     @property
@@ -37,11 +37,11 @@ class MarketCommand(BotCommand):
 
     @property
     def aliases(self) -> List[str]:
-        return ["m", "大盘", "复盘", "行情"]
+        return ["m", "market", "review", "quote"]
 
     @property
     def description(self) -> str:
-        return "大盘复盘分析"
+        return "Market review analysis"
 
     @property
     def usage(self) -> str:
