@@ -30,7 +30,7 @@ from tenacity import (
 
 from .base import BaseFetcher, DataFetchError, STANDARD_COLUMNS
 from .realtime_types import UnifiedRealtimeQuote, RealtimeSource
-from .us_index_mapping import get_us_index_yf_symbol, is_us_index_code, is_us_stock_code
+from .us_index_mapping import get_us_index_yf_symbol, is_us_index_code, is_us_stock_code, KNOWN_EURONEXT_STOCKS
 from .akshare_fetcher import _is_forex_code, _is_euronext_code
 import os
 
@@ -101,6 +101,12 @@ class YfinanceFetcher(BaseFetcher):
         if _is_euronext_code(code):
             logger.debug(f"识别为欧洲交易所代码: {code}")
             return code
+
+        # 检查是否为已知 Euronext 股票（无后缀形式，如 BNP -> BNP.PA）
+        if code in KNOWN_EURONEXT_STOCKS:
+            euronext_code = KNOWN_EURONEXT_STOCKS[code]
+            logger.debug(f"识别为已知欧洲股票: {code} -> {euronext_code}")
+            return euronext_code
 
         # 美股指数：映射到 Yahoo Finance 符号（如 SPX -> ^GSPC）
         yf_symbol, _ = get_us_index_yf_symbol(code)

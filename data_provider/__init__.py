@@ -28,7 +28,8 @@ from .us_index_mapping import (
     get_forex_yf_symbol,
     US_INDEX_MAPPING,
     GLOBAL_MARKET_SUFFIXES,
-    FOREX_PAIRS
+    FOREX_PAIRS,
+    KNOWN_EURONEXT_STOCKS,
 )
 
 __all__ = [
@@ -46,4 +47,5 @@ __all__ = [
     'US_INDEX_MAPPING',
     'GLOBAL_MARKET_SUFFIXES',
     'FOREX_PAIRS',
+    'KNOWN_EURONEXT_STOCKS',
 ]

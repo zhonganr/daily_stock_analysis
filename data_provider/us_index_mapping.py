@@ -58,6 +58,31 @@ FOREX_PAIRS = {
     'USD': ('USDCNY=X', '美元/人民币'),  # 简写别名 (注意：与美股代码冲突，需要上下文判断)
 }
 
+# 已知 Euronext 股票映射（无后缀代码 -> 带后缀代码）
+# 这解决了"BNP"等无后缀代码被误认为美股的问题
+KNOWN_EURONEXT_STOCKS = {
+    # France (Paris) - .PA
+    'BNP': 'BNP.PA',       # BNP Paribas
+    'TTE': 'TTE.PA',       # TotalEnergies
+    'OR': 'OR.PA',         # L'Oréal
+    'MC': 'MC.PA',         # LVMH
+    'RMS': 'RMS.PA',       # Hermès
+    
+    # Netherlands (Amsterdam) - .AS
+    'ASML': 'ASML.AS',     # ASML Holding
+    'AEX': 'AEX.AS',       # Amsterdam Exchange Index
+    'RDSA': 'RDSA.AS',     # Royal Dutch Shell A
+    
+    # Belgium (Brussels) - .BR
+    'GBT': 'GBT.BR',       # GBT Tokenize
+    
+    # Ireland (Dublin) - .DU
+    'CRH': 'CRH.DU',       # CRH plc
+    
+    # Portugal (Lisbon) - .LI
+    # (添加更多葡萄牙股票)
+}
+
 
 # 用户输入 -> (Yahoo Finance 符号, 中文名称)
 US_INDEX_MAPPING = {
