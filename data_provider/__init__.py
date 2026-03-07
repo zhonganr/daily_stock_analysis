@@ -20,6 +20,7 @@ from .yfinance_fetcher import YfinanceFetcher
 from .us_index_mapping import (
     is_us_index_code, 
     is_us_stock_code, 
+    is_hk_stock_code,
     is_euronext_stock,
     is_forex_pair,
     is_global_stock,
@@ -36,6 +37,7 @@ __all__ = [
     'YfinanceFetcher',
     'is_us_index_code',
     'is_us_stock_code',
+    'is_hk_stock_code',
     'is_euronext_stock',
     'is_forex_pair',
     'is_global_stock',

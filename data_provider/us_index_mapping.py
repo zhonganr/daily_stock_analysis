@@ -27,6 +27,9 @@ import re
 # 美股代码正则：1-5 个大写字母，可选 .X 后缀（如 BRK.B）
 _US_STOCK_PATTERN = re.compile(r'^[A-Z]{1,5}(\.[A-Z])?$')
 
+# 港股代码正则：HK 前缀 + 4-5 位数字（如 HK00700）或 4-5 位数字 + .HK 后缀（如 0700.HK）
+_HK_STOCK_PATTERN = re.compile(r'^(HK\d{4,5}|\d{4,5}\.HK)$')
+
 # Euronext 代码正则：1-6 个大写字母，后跟 .XX 市场后缀
 _EURONEXT_PATTERN = re.compile(r'^[A-Z]{1,6}\.(PA|AS|BR|DU|LI)$')
 
@@ -131,6 +134,36 @@ def is_us_stock_code(code: str) -> bool:
     if normalized in US_INDEX_MAPPING:
         return False
     return bool(_US_STOCK_PATTERN.match(normalized))
+
+
+def is_hk_stock_code(code: str) -> bool:
+    """
+    判断代码是否为香港股票符号。
+
+    港股代码格式：
+    - HK 前缀 + 4-5 位数字（如 HK00700）
+    - 4-5 位数字 + .HK 后缀（如 0700.HK）
+
+    Args:
+        code: 股票代码，如 'HK00700', '0700.HK'
+
+    Returns:
+        True 表示是港股符号，否则 False
+
+    Examples:
+        >>> is_hk_stock_code('HK00700')
+        True
+        >>> is_hk_stock_code('0700.HK')
+        True
+        >>> is_hk_stock_code('HK09988')
+        True
+        >>> is_hk_stock_code('AAPL')
+        False
+        >>> is_hk_stock_code('600519')
+        False
+    """
+    normalized = (code or '').strip().upper()
+    return bool(_HK_STOCK_PATTERN.match(normalized))
 
 
 def get_us_index_yf_symbol(code: str) -> tuple:
