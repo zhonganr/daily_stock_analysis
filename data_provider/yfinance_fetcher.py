@@ -31,6 +31,7 @@ from tenacity import (
 from .base import BaseFetcher, DataFetchError, STANDARD_COLUMNS
 from .realtime_types import UnifiedRealtimeQuote, RealtimeSource
 from .us_index_mapping import get_us_index_yf_symbol, is_us_index_code, is_us_stock_code
+from .akshare_fetcher import _is_forex_code, _is_euronext_code
 import os
 
 logger = logging.getLogger(__name__)
@@ -70,6 +71,8 @@ class YfinanceFetcher(BaseFetcher):
         - A股深市：000001.SZ (Shenzhen Stock Exchange)
         - 港股：0700.HK (Hong Kong Stock Exchange)
         - 美股：AAPL, TSLA, GOOGL (无需后缀)
+        - 外汇：EURCNY, USDCNY (无需后缀)
+        - 欧洲：BNP.PA, ASML.AS (已有后缀)
 
         Args:
             stock_code: 原始代码，如 '600519', 'hk00700', 'AAPL'
@@ -84,8 +87,20 @@ class YfinanceFetcher(BaseFetcher):
             '0700.HK'
             >>> fetcher._convert_stock_code('AAPL')
             'AAPL'
+            >>> fetcher._convert_stock_code('EURCNY')
+            'EURCNY'
         """
         code = stock_code.strip().upper()
+
+        # 外汇对：直接返回原样代码，不添加后缀
+        if _is_forex_code(code):
+            logger.debug(f"识别为外汇对代码: {code}")
+            return code
+
+        # 欧洲交易所代码：已包含后缀，直接返回
+        if _is_euronext_code(code):
+            logger.debug(f"识别为欧洲交易所代码: {code}")
+            return code
 
         # 美股指数：映射到 Yahoo Finance 符号（如 SPX -> ^GSPC）
         yf_symbol, _ = get_us_index_yf_symbol(code)
