@@ -887,7 +887,16 @@ Always display the correct English stock name at the beginning of your analysis.
 - **检查清单**：每项用 ✅/⚠️/❌ 标记
             """
 
-
+        
+        if is_en:
+            prompt += "\n### ⚠️ Stock Analysis Complete\nOutput JSON-format decision dashboard."
+        else:
+            prompt += "\n### ⚠️ 分析完毕\n请输出完整的 JSON 格式决策仪表盘。"
+        
+        return prompt
+    
+    def _format_volume(self, volume: Optional[float]) -> str:
+        """格式化成交量显示"""
         if volume is None:
             return 'N/A'
         if volume >= 1e8:
