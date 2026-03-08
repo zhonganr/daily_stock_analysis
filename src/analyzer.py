@@ -623,7 +623,8 @@ class GeminiAnalyzer:
             news_context: 预先搜索的新闻内容
         """
         # Language-aware labels
-        is_en = self.config.report_language and self.config.report_language.lower() in ('en', 'english')
+        config = get_config()
+        is_en = config.report_language and config.report_language.lower() in ('en', 'english')
         
         labels = {
             'title': '# 决策仪表盘分析请求' if not is_en else '# Decision Dashboard Analysis Request',
