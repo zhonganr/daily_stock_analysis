@@ -614,10 +614,14 @@ class NotificationService(
                     "",
                 ])
         
-        # 底部信息（去除免责声明）
+        # Bottom info (disclaimer removed)
+        from src.config import get_config
+        config = get_config()
+        is_en = config.report_language and config.report_language.lower() in ('en', 'english')
+        timestamp_label = "Report Generated At" if is_en else "报告生成时间"
         report_lines.extend([
             "",
-            f"*报告生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
+            f"*{timestamp_label}：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
         ])
         
         return "\n".join(report_lines)
@@ -949,10 +953,14 @@ class NotificationService(
                     "",
                 ])
         
-        # 底部（去除免责声明）
+        # Bottom (disclaimer removed)
+        from src.config import get_config
+        config = get_config()
+        is_en = config.report_language and config.report_language.lower() in ('en', 'english')
+        timestamp_label = "Report Generated At" if is_en else "报告生成时间"
         report_lines.extend([
             "",
-            f"*报告生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
+            f"*{timestamp_label}：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
         ])
         
         return "\n".join(report_lines)
