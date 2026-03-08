@@ -7,6 +7,8 @@ Discord 发送提醒服务
 """
 import logging
 import requests
+import time
+import json
 
 from src.config import Config
 from src.formatters import chunk_content_by_max_words
@@ -69,11 +71,23 @@ class DiscordSender:
 
         # 优先使用 Webhook（配置简单，权限低）
         if self._discord_config['webhook_url']:
-            return all(self._send_discord_webhook(chunk) for chunk in chunks)
+            result = True
+            for i, chunk in enumerate(chunks):
+                if i > 0:
+                    # Add delay between messages to avoid rate limiting
+                    time.sleep(0.5)
+                result = self._send_discord_webhook(chunk) and result
+            return result
 
         # 其次使用 Bot API（权限高，需要 channel_id）
         if self._discord_config['bot_token'] and self._discord_config['channel_id']:
-            return all(self._send_discord_bot(chunk) for chunk in chunks)
+            result = True
+            for i, chunk in enumerate(chunks):
+                if i > 0:
+                    # Add delay between messages to avoid rate limiting
+                    time.sleep(0.5)
+                result = self._send_discord_bot(chunk) and result
+            return result
 
         logger.warning("Discord 配置不完整，跳过推送")
         return False
@@ -122,7 +136,7 @@ class DiscordSender:
     
     def _send_discord_bot(self, content: str) -> bool:
         """
-        使用 Bot API 发送消息到 Discord
+        使用 Bot API 发送消息到 Discord，支持速率限制重试
         
         Args:
             content: Markdown 格式的消息内容
@@ -135,25 +149,48 @@ class DiscordSender:
             logger.warning("Discord Bot 消息内容为空，跳过发送")
             return False
         
-        try:
-            headers = {
-                'Authorization': f'Bot {self._discord_config["bot_token"]}',
-                'Content-Type': 'application/json'
-            }
-            
-            payload = {
-                'content': content
-            }
-            
-            url = f'https://discord.com/api/v10/channels/{self._discord_config["channel_id"]}/messages'
-            response = requests.post(url, json=payload, headers=headers, timeout=10)
-            
-            if response.status_code == 200:
-                logger.info("Discord Bot 消息发送成功")
-                return True
-            else:
-                logger.error(f"Discord Bot 发送失败: {response.status_code} {response.text}")
+        max_retries = 3
+        retry_count = 0
+        retry_after = 1.0
+        
+        while retry_count < max_retries:
+            try:
+                headers = {
+                    'Authorization': f'Bot {self._discord_config["bot_token"]}',
+                    'Content-Type': 'application/json'
+                }
+                
+                payload = {
+                    'content': content
+                }
+                
+                url = f'https://discord.com/api/v10/channels/{self._discord_config["channel_id"]}/messages'
+                response = requests.post(url, json=payload, headers=headers, timeout=10)
+                
+                if response.status_code == 200:
+                    logger.info("Discord Bot 消息发送成功")
+                    return True
+                elif response.status_code == 429:
+                    # Too Many Requests - extract retry_after and wait
+                    try:
+                        retry_data = response.json()
+                        retry_after = retry_data.get('retry_after', 1.0)
+                        logger.warning(f"Discord Bot 触发速率限制，{retry_after}秒后重试 (第 {retry_count+1} 次)")
+                    except (json.JSONDecodeError, ValueError):
+                        logger.warning(f"Discord Bot 触发速率限制，默认延迟1秒后重试 (第 {retry_count+1} 次)")
+                    
+                    retry_count += 1
+                    if retry_count < max_retries:
+                        time.sleep(retry_after)
+                        continue
+                    else:
+                        logger.error(f"Discord Bot 达到最大重试次数，放弃发送")
+                        return False
+                else:
+                    logger.error(f"Discord Bot 发送失败: {response.status_code} {response.text}")
+                    return False
+            except Exception as e:
+                logger.error(f"Discord Bot 发送异常: {e}")
                 return False
-        except Exception as e:
-            logger.error(f"Discord Bot 发送异常: {e}")
-            return False
+        
+        return False

@@ -981,11 +981,14 @@ class SearchService:
     
     @staticmethod
     def _is_foreign_stock(stock_code: str) -> bool:
-        """判断是否为港股或美股"""
+        """判断是否为港股、美股、欧股或外汇对"""
         import re
         code = stock_code.strip()
-        # 美股：1-5个大写字母，可能包含点（如 BRK.B）
-        if re.match(r'^[A-Za-z]{1,5}(\.[A-Za-z])?$', code):
+        # 美股/欧股：1-5个大写字母，可能包含点（如 BRK.B、BNP.PA）
+        if re.match(r'^[A-Za-z]{1,5}(\.[A-Za-z]{1,2})?$', code):
+            return True
+        # 外汇对：包含 = 符号（如 EURCNY=X）或 6 个字母的外币对代码（如 EURCNY, USDCNY, GBPCNY）
+        if '=' in code or re.match(r'^[A-Z]{6}$', code):
             return True
         # 港股：带 hk 前缀或 5位纯数字
         lower = code.lower()

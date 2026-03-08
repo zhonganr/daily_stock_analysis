@@ -615,12 +615,68 @@ class GeminiAnalyzer:
         格式化分析提示词（决策仪表盘 v2.0）
         
         包含：技术指标、实时行情（量比/换手率）、筹码分布、趋势分析、新闻
+        支持多语言输出（英文/中文）
         
         Args:
             context: 技术面数据上下文（包含增强数据）
             name: 股票名称（默认值，可能被上下文覆盖）
             news_context: 预先搜索的新闻内容
         """
+        # Language-aware labels
+        is_en = self.config.report_language and self.config.report_language.lower() in ('en', 'english')
+        
+        labels = {
+            'title': '# 决策仪表盘分析请求' if not is_en else '# Decision Dashboard Analysis Request',
+            'basic_info': '## 📊 股票基础信息' if not is_en else '## 📊 Stock Basic Information',
+            'technical_data': '## 📈 技术面数据' if not is_en else '## 📈 Technical Data',
+            'daily_market': '### 今日行情' if not is_en else '### Daily Market Data',
+            'ma_system': '### 均线系统（关键判断指标）' if not is_en else '### Moving Average System (Critical)',
+            'realtime_enhanced': '### 实时行情增强数据' if not is_en else '### Realtime Enhanced Data',
+            'chip_data': '### 筹码分布数据（效率指标）' if not is_en else '### Chip Distribution Data',
+            'trend_analysis': '### 趋势分析预判（基于交易理念）' if not is_en else '### Trend Analysis Prediction',
+            'volume_price': '### 量价变化' if not is_en else '### Volume-Price Changes',
+            'intelligence': '## 📰 舆情情报' if not is_en else '## 📰 Market Intelligence',
+            'analysis_task': '## ✅ 分析任务' if not is_en else '## ✅ Analysis Task',
+            'code': '股票代码' if not is_en else 'Stock Code',
+            'name': '股票名称' if not is_en else 'Stock Name',
+            'date': '分析日期' if not is_en else 'Analysis Date',
+            'close': '收盘价' if not is_en else 'Close',
+            'open': '开盘价' if not is_en else 'Open',
+            'high': '最高价' if not is_en else 'High',
+            'low': '最低价' if not is_en else 'Low',
+            'pct_chg': '涨跌幅' if not is_en else 'Change %',
+            'volume': '成交量' if not is_en else 'Volume',
+            'amount': '成交额' if not is_en else 'Amount',
+            'ma5_desc': '短期趋势线' if not is_en else 'Short-term Trend',
+            'ma10_desc': '中短期趋势线' if not is_en else 'Medium-short Trend',
+            'ma20_desc': '中期趋势线' if not is_en else 'Medium-term Trend',
+            'ma_form': '均线形态' if not is_en else 'MA Alignment',
+            'price': '当前价格' if not is_en else 'Current Price',
+            'volume_ratio': '量比' if not is_en else 'Volume Ratio',
+            'turnover': '换手率' if not is_en else 'Turnover Rate',
+            'pe': '市盈率(动态)' if not is_en else 'P/E Ratio (Dynamic)',
+            'pb': '市净率' if not is_en else 'P/B Ratio',
+            'mv': '总市值' if not is_en else 'Total Market Cap',
+            'circ_mv': '流通市值' if not is_en else 'Circulation Market Cap',
+            'change_60d': '60日涨跌幅' if not is_en else '60-day Change %',
+            'profit': '获利比例' if not is_en else 'Profit Ratio',
+            'avg_cost': '平均成本' if not is_en else 'Avg Cost',
+            'concentration_90': '90%筹码集中度' if not is_en else '90% Concentration',
+            'concentration_70': '70%筹码集中度' if not is_en else '70% Concentration',
+            'chip_status': '筹码状态' if not is_en else 'Chip Status',
+            'trend': '趋势状态' if not is_en else 'Trend Status',
+            'bias_ma5': '乖离率(MA5)' if not is_en else 'Bias (MA5)',
+            'bias_ma10': '乖离率(MA10)' if not is_en else 'Bias (MA10)',
+            'trend_strength': '趋势强度' if not is_en else 'Trend Strength',
+            'signal': '系统信号' if not is_en else 'System Signal',
+            'score': '系统评分' if not is_en else 'System Score',
+            'buy_reason': '买入理由' if not is_en else 'Buy Reason',
+            'risk_factors': '风险因素' if not is_en else 'Risk Factors',
+            'no_reason': '无' if not is_en else 'None',
+            'news_header': f"以下是 **{name}({context.get('code', 'Unknown')})** 近7日的新闻搜索结果，请重点提取：" if not is_en else f"Following are news search results for **{name}({context.get('code', 'Unknown')})** in the past 7 days. Please extract:",
+            'data_missing_warn': '数据缺失警告' if not is_en else 'Data Missing Warning',
+        }
+        
         code = context.get('code', 'Unknown')
         
         # 优先使用上下文中的股票名称（从 realtime_quote 获取）
@@ -631,54 +687,54 @@ class GeminiAnalyzer:
         today = context.get('today', {})
         
         # ========== 构建决策仪表盘格式的输入 ==========
-        prompt = f"""# 决策仪表盘分析请求
+        prompt = f"""{labels['title']}
 
-## 📊 股票基础信息
+{labels['basic_info']}
 | 项目 | 数据 |
 |------|------|
-| 股票代码 | **{code}** |
-| 股票名称 | **{stock_name}** |
-| 分析日期 | {context.get('date', '未知')} |
+| {labels['code']} | **{code}** |
+| {labels['name']} | **{stock_name}** |
+| {labels['date']} | {context.get('date', '未知' if not is_en else 'Unknown')} |
 
 ---
 
-## 📈 技术面数据
+{labels['technical_data']}
 
-### 今日行情
+{labels['daily_market']}
 | 指标 | 数值 |
 |------|------|
-| 收盘价 | {today.get('close', 'N/A')} 元 |
-| 开盘价 | {today.get('open', 'N/A')} 元 |
-| 最高价 | {today.get('high', 'N/A')} 元 |
-| 最低价 | {today.get('low', 'N/A')} 元 |
-| 涨跌幅 | {today.get('pct_chg', 'N/A')}% |
-| 成交量 | {self._format_volume(today.get('volume'))} |
-| 成交额 | {self._format_amount(today.get('amount'))} |
+| {labels['close']} | {today.get('close', 'N/A')} 元 |
+| {labels['open']} | {today.get('open', 'N/A')} 元 |
+| {labels['high']} | {today.get('high', 'N/A')} 元 |
+| {labels['low']} | {today.get('low', 'N/A')} 元 |
+| {labels['pct_chg']} | {today.get('pct_chg', 'N/A')}% |
+| {labels['volume']} | {self._format_volume(today.get('volume'))} |
+| {labels['amount']} | {self._format_amount(today.get('amount'))} |
 
-### 均线系统（关键判断指标）
+{labels['ma_system']}
 | 均线 | 数值 | 说明 |
 |------|------|------|
-| MA5 | {today.get('ma5', 'N/A')} | 短期趋势线 |
-| MA10 | {today.get('ma10', 'N/A')} | 中短期趋势线 |
-| MA20 | {today.get('ma20', 'N/A')} | 中期趋势线 |
-| 均线形态 | {context.get('ma_status', '未知')} | 多头/空头/缠绕 |
+| MA5 | {today.get('ma5', 'N/A')} | {labels['ma5_desc']} |
+| MA10 | {today.get('ma10', 'N/A')} | {labels['ma10_desc']} |
+| MA20 | {today.get('ma20', 'N/A')} | {labels['ma20_desc']} |
+| {labels['ma_form']} | {context.get('ma_status', '未知' if not is_en else 'Unknown')} | 多头/空头/缠绕 |
 """
         
         # 添加实时行情数据（量比、换手率等）
         if 'realtime' in context:
             rt = context['realtime']
             prompt += f"""
-### 实时行情增强数据
+{labels['realtime_enhanced']}
 | 指标 | 数值 | 解读 |
 |------|------|------|
-| 当前价格 | {rt.get('price', 'N/A')} 元 | |
-| **量比** | **{rt.get('volume_ratio', 'N/A')}** | {rt.get('volume_ratio_desc', '')} |
-| **换手率** | **{rt.get('turnover_rate', 'N/A')}%** | |
-| 市盈率(动态) | {rt.get('pe_ratio', 'N/A')} | |
-| 市净率 | {rt.get('pb_ratio', 'N/A')} | |
-| 总市值 | {self._format_amount(rt.get('total_mv'))} | |
-| 流通市值 | {self._format_amount(rt.get('circ_mv'))} | |
-| 60日涨跌幅 | {rt.get('change_60d', 'N/A')}% | 中期表现 |
+| {labels['price']} | {rt.get('price', 'N/A')} 元 | |
+| **{labels['volume_ratio']}** | **{rt.get('volume_ratio', 'N/A')}** | {rt.get('volume_ratio_desc', '')} |
+| **{labels['turnover']}** | **{rt.get('turnover_rate', 'N/A')}%** | |
+| {labels['pe']} | {rt.get('pe_ratio', 'N/A')} | |
+| {labels['pb']} | {rt.get('pb_ratio', 'N/A')} | |
+| {labels['mv']} | {self._format_amount(rt.get('total_mv'))} | |
+| {labels['circ_mv']} | {self._format_amount(rt.get('circ_mv'))} | |
+| {labels['change_60d']} | {rt.get('change_60d', 'N/A')}% | 中期表现 |
 """
         
         # 添加筹码分布数据
@@ -686,62 +742,61 @@ class GeminiAnalyzer:
             chip = context['chip']
             profit_ratio = chip.get('profit_ratio', 0)
             prompt += f"""
-### 筹码分布数据（效率指标）
+{labels['chip_data']}
 | 指标 | 数值 | 健康标准 |
 |------|------|----------|
-| **获利比例** | **{profit_ratio:.1%}** | 70-90%时警惕 |
-| 平均成本 | {chip.get('avg_cost', 'N/A')} 元 | 现价应高于5-15% |
-| 90%筹码集中度 | {chip.get('concentration_90', 0):.2%} | <15%为集中 |
-| 70%筹码集中度 | {chip.get('concentration_70', 0):.2%} | |
-| 筹码状态 | {chip.get('chip_status', '未知')} | |
+| **{labels['profit']}** | **{profit_ratio:.1%}** | 70-90%时警惕 |
+| {labels['avg_cost']} | {chip.get('avg_cost', 'N/A')} 元 | 现价应高于5-15% |
+| {labels['concentration_90']} | {chip.get('concentration_90', 0):.2%} | <15%为集中 |
+| {labels['concentration_70']} | {chip.get('concentration_70', 0):.2%} | |
+| {labels['chip_status']} | {chip.get('chip_status', '未知' if not is_en else 'Unknown')} | |
 """
         
         # 添加趋势分析结果（基于交易理念的预判）
         if 'trend_analysis' in context:
             trend = context['trend_analysis']
-            bias_warning = "🚨 超过5%，严禁追高！" if trend.get('bias_ma5', 0) > 5 else "✅ 安全范围"
+            bias_warning = "🚨 超过5%，严禁追高！" if not is_en else "🚨 Over 5%, forbidden to chase!" if trend.get('bias_ma5', 0) > 5 else "✅ 安全范围" if not is_en else "✅ Safe zone"
             prompt += f"""
-### 趋势分析预判（基于交易理念）
+{labels['trend_analysis']}
 | 指标 | 数值 | 判定 |
 |------|------|------|
-| 趋势状态 | {trend.get('trend_status', '未知')} | |
-| 均线排列 | {trend.get('ma_alignment', '未知')} | MA5>MA10>MA20为多头 |
-| 趋势强度 | {trend.get('trend_strength', 0)}/100 | |
-| **乖离率(MA5)** | **{trend.get('bias_ma5', 0):+.2f}%** | {bias_warning} |
-| 乖离率(MA10) | {trend.get('bias_ma10', 0):+.2f}% | |
-| 量能状态 | {trend.get('volume_status', '未知')} | {trend.get('volume_trend', '')} |
-| 系统信号 | {trend.get('buy_signal', '未知')} | |
-| 系统评分 | {trend.get('signal_score', 0)}/100 | |
+| {labels['trend']} | {trend.get('trend_status', '未知' if not is_en else 'Unknown')} | |
+| {labels['ma_form']} | {trend.get('ma_alignment', '未知' if not is_en else 'Unknown')} | MA5>MA10>MA20为多头 |
+| {labels['trend_strength']} | {trend.get('trend_strength', 0)}/100 | |
+| **{labels['bias_ma5']}** | **{trend.get('bias_ma5', 0):+.2f}%** | {bias_warning} |
+| {labels['bias_ma10']} | {trend.get('bias_ma10', 0):+.2f}% | |
+| 量能状态 | {trend.get('volume_status', '未知' if not is_en else 'Unknown')} | {trend.get('volume_trend', '')} |
+| {labels['signal']} | {trend.get('buy_signal', '未知' if not is_en else 'Unknown')} | |
+| {labels['score']} | {trend.get('signal_score', 0)}/100 | |
 
-#### 系统分析理由
-**买入理由**：
-{chr(10).join('- ' + r for r in trend.get('signal_reasons', ['无'])) if trend.get('signal_reasons') else '- 无'}
+#### {labels['buy_reason']}：
+{chr(10).join('- ' + r for r in trend.get('signal_reasons', []) if r) if trend.get('signal_reasons') else '- ' + labels['no_reason']}
 
-**风险因素**：
-{chr(10).join('- ' + r for r in trend.get('risk_factors', ['无'])) if trend.get('risk_factors') else '- 无'}
+#### {labels['risk_factors']}：
+{chr(10).join('- ' + r for r in trend.get('risk_factors', []) if r) if trend.get('risk_factors') else '- ' + labels['no_reason']}
 """
         
         # 添加昨日对比数据
         if 'yesterday' in context:
             volume_change = context.get('volume_change_ratio', 'N/A')
             prompt += f"""
-### 量价变化
-- 成交量较昨日变化：{volume_change}倍
-- 价格较昨日变化：{context.get('price_change_ratio', 'N/A')}%
+{labels['volume_price']}
+- {'成交量较昨日变化：' if not is_en else 'Volume change vs yesterday: '}{volume_change}倍
+- {'价格较昨日变化：' if not is_en else 'Price change vs yesterday: '}{context.get('price_change_ratio', 'N/A')}%
 """
         
         # 添加新闻搜索结果（重点区域）
-        prompt += """
+        prompt += f"""
 ---
 
-## 📰 舆情情报
+{labels['intelligence']}
 """
         if news_context:
             prompt += f"""
-以下是 **{stock_name}({code})** 近7日的新闻搜索结果，请重点提取：
-1. 🚨 **风险警报**：减持、处罚、利空
-2. 🎯 **利好催化**：业绩、合同、政策
-3. 📊 **业绩预期**：年报预告、业绩快报
+{labels['news_header']}
+1. {'🚨 **风险警报**：减持、处罚、利空' if not is_en else '🚨 **Risk Alerts**: insider selling, penalties, negative news'}
+2. {'🎯 **利好催化**：业绩、合同、政策' if not is_en else '🎯 **Positive Catalysts**: earnings, contracts, policies'}
+3. {'📊 **业绩预期**：年报预告、业绩快报' if not is_en else '📊 **Earnings Outlook**: annual reports, earnings releases'}
 
 ```
 {news_context}
@@ -750,6 +805,8 @@ class GeminiAnalyzer:
         else:
             prompt += """
 未搜索到该股票近期的相关新闻。请主要依据技术面数据进行分析。
+""" if not is_en else """
+No recent news found for this stock. Please analyze mainly based on technical data.
 """
 
         # 注入缺失数据警告
