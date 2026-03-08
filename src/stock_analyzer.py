@@ -353,16 +353,16 @@ class StockTrendAnalyzer:
             
             if curr_spread > prev_spread and curr_spread > 5:
                 result.trend_status = TrendStatus.STRONG_BULL
-                result.ma_alignment = "强势多头排列，均线发散上行"
+                result.ma_alignment = "Strong Bullish Alignment - MA lines diverging upward"
                 result.trend_strength = 90
             else:
                 result.trend_status = TrendStatus.BULL
-                result.ma_alignment = "多头排列 MA5>MA10>MA20"
+                result.ma_alignment = "Bullish Alignment MA5>MA10>MA20"
                 result.trend_strength = 75
                 
         elif ma5 > ma10 and ma10 <= ma20:
             result.trend_status = TrendStatus.WEAK_BULL
-            result.ma_alignment = "弱势多头，MA5>MA10 但 MA10≤MA20"
+            result.ma_alignment = "Weak Bullish - MA5>MA10 but MA10≤MA20"
             result.trend_strength = 55
             
         elif ma5 < ma10 < ma20:
@@ -532,13 +532,13 @@ class StockTrendAnalyzer:
             result.macd_signal = "⚠️ DIF下穿零轴，趋势转弱"
         elif result.macd_dif > 0 and result.macd_dea > 0:
             result.macd_status = MACDStatus.BULLISH
-            result.macd_signal = "✓ 多头排列，持续上涨"
+            result.macd_signal = "✓ Bullish Alignment, Continued Strong"
         elif result.macd_dif < 0 and result.macd_dea < 0:
             result.macd_status = MACDStatus.BEARISH
-            result.macd_signal = "⚠ 空头排列，持续下跌"
+            result.macd_signal = "⚠ Bearish Alignment, Continued Weakness"
         else:
             result.macd_status = MACDStatus.BULLISH
-            result.macd_signal = " MACD 中性区域"
+            result.macd_signal = "MACD Neutral Zone"
 
     def _analyze_rsi(self, df: pd.DataFrame, result: TrendAnalysisResult) -> None:
         """

@@ -685,15 +685,15 @@ class StockAnalysisPipeline:
         ma10 = ma10 or 0
         ma20 = ma20 or 0
         if close > ma5 > ma10 > ma20 > 0:
-            return "多头排列 📈"
+            return "Bullish Alignment 📈"
         elif close < ma5 < ma10 < ma20 and ma20 > 0:
-            return "空头排列 📉"
+            return "Bearish Alignment 📉"
         elif close > ma5 and ma5 > ma10:
-            return "短期向好 🔼"
+            return "Short-term Uptrend 🔼"
         elif close < ma5 and ma5 < ma10:
-            return "短期走弱 🔽"
+            return "Short-term Downtrend 🔽"
         else:
-            return "震荡整理 ↔️"
+            return "Range-bound Consolidation ↔️"
 
     def _augment_historical_with_realtime(
         self, df: pd.DataFrame, realtime_quote: Any, code: str
