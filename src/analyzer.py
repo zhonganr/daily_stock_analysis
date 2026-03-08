@@ -896,26 +896,26 @@ Always display the correct English stock name at the beginning of your analysis.
         return prompt
     
     def _format_volume(self, volume: Optional[float]) -> str:
-        """格式化成交量显示"""
+        """Format trading volume for display"""
         if volume is None:
             return 'N/A'
         if volume >= 1e8:
-            return f"{volume / 1e8:.2f} 亿股"
+            return f"{volume / 1e8:.2f}B shares"
         elif volume >= 1e4:
-            return f"{volume / 1e4:.2f} 万股"
+            return f"{volume / 1e4:.2f}M shares"
         else:
-            return f"{volume:.0f} 股"
+            return f"{volume:.0f} shares"
     
     def _format_amount(self, amount: Optional[float]) -> str:
-        """格式化成交额显示"""
+        """Format trading amount for display"""
         if amount is None:
             return 'N/A'
         if amount >= 1e8:
-            return f"{amount / 1e8:.2f} 亿元"
+            return f"{amount / 1e8:.2f}B yuan"
         elif amount >= 1e4:
-            return f"{amount / 1e4:.2f} 万元"
+            return f"{amount / 1e4:.2f}M yuan"
         else:
-            return f"{amount:.0f} 元"
+            return f"{amount:.0f} yuan"
 
     def _format_percent(self, value: Optional[float]) -> str:
         """格式化百分比显示"""
