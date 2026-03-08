@@ -710,7 +710,7 @@ class GeminiAnalyzer:
 | {labels['low']} | {today.get('low', 'N/A')} 元 |
 | {labels['pct_chg']} | {today.get('pct_chg', 'N/A')}% |
 | {labels['volume']} | {self._format_volume(today.get('volume'))} |
-| {labels['amount']} | {self._format_amount(today.get('amount'))} |
+| {labels['amount']} | {self._format_amount(today.get('amount'), code)} |
 
 {labels['ma_system']}
 | 均线 | 数值 | 说明 |
@@ -733,8 +733,8 @@ class GeminiAnalyzer:
 | **{labels['turnover']}** | **{rt.get('turnover_rate', 'N/A')}%** | |
 | {labels['pe']} | {rt.get('pe_ratio', 'N/A')} | |
 | {labels['pb']} | {rt.get('pb_ratio', 'N/A')} | |
-| {labels['mv']} | {self._format_amount(rt.get('total_mv'))} | |
-| {labels['circ_mv']} | {self._format_amount(rt.get('circ_mv'))} | |
+| {labels['mv']} | {self._format_amount(rt.get('total_mv'), code)} | |
+| {labels['circ_mv']} | {self._format_amount(rt.get('circ_mv'), code)} | |
 | {labels['change_60d']} | {rt.get('change_60d', 'N/A')}% | 中期表现 |
 """
         
@@ -906,16 +906,71 @@ Always display the correct English stock name at the beginning of your analysis.
         else:
             return f"{volume:.0f} shares"
     
-    def _format_amount(self, amount: Optional[float]) -> str:
-        """Format trading amount for display"""
+    def _get_market_type(self, code: Optional[str]) -> str:
+        """Detect market type based on stock code.
+        
+        Returns: 'us', 'eu', 'hk', 'cn', 'forex' or 'unknown'
+        """
+        if not code:
+            return 'unknown'
+        
+        code_upper = code.upper()
+        
+        # Forex pairs (EURCNY, USDCNY, etc.)
+        if code_upper in ['EURCNY', 'EURCNY=X', 'USDCNY', 'USDCNY=X'] or (len(code_upper) == 6 and code_upper.endswith('NY')):
+            return 'forex'
+        
+        # Hong Kong stocks (5-digit starting with 0, or known HK codes)
+        if (len(code) == 5 and code[0] == '0' and code.isdigit()):
+            return 'hk'
+        
+        # A-shares (6-digit starting with 6, 0, 3)
+        if len(code) == 6 and code.isdigit() and code[0] in ['6', '0', '3']:
+            return 'cn'
+        
+        # Euronext (suffix .PA, .AS, .BR, .MI, .LS, etc.)
+        if '.' in code:
+            suffix = code.split('.')[-1].upper()
+            if suffix in ['PA', 'AS', 'BR', 'MI', 'LS', 'DE', 'F']:
+                return 'eu'
+        
+        # US stocks (typically 1-5 uppercase letters)
+        if 1 <= len(code) <= 5 and code.isalpha():
+            return 'us'
+        
+        return 'unknown'
+    
+    def _format_amount(self, amount: Optional[float], code: Optional[str] = None) -> str:
+        """Format trading amount for display with appropriate currency
+        
+        Args:
+            amount: The amount value to format
+            code: Stock code to determine currency (USD for US, EUR for EU, HKD for HK, CNY for CN)
+        """
         if amount is None:
             return 'N/A'
+        
+        # Detect market to determine currency
+        market = self._get_market_type(code)
+        
+        # Map market to currency suffix
+        currency_map = {
+            'us': 'usd',
+            'eu': 'eur',
+            'hk': 'hkd',
+            'cn': 'yuan',
+            'forex': 'cny',
+            'unknown': 'yuan'
+        }
+        currency = currency_map.get(market, 'yuan')
+        
+        # Format with B/M/units notation
         if amount >= 1e8:
-            return f"{amount / 1e8:.2f}B yuan"
+            return f"{amount / 1e8:.2f}B {currency}"
         elif amount >= 1e4:
-            return f"{amount / 1e4:.2f}M yuan"
+            return f"{amount / 1e4:.2f}M {currency}"
         else:
-            return f"{amount:.0f} yuan"
+            return f"{amount:.0f} {currency}"
 
     def _format_percent(self, value: Optional[float]) -> str:
         """格式化百分比显示"""
@@ -959,6 +1014,7 @@ Always display the correct English stock name at the beginning of your analysis.
             except (TypeError, ValueError):
                 change_amount = None
 
+        code = context.get('code')
         snapshot = {
             "date": context.get('date', '未知'),
             "close": self._format_price(close),
@@ -970,7 +1026,7 @@ Always display the correct English stock name at the beginning of your analysis.
             "change_amount": self._format_price(change_amount),
             "amplitude": self._format_percent(amplitude),
             "volume": self._format_volume(today.get('volume')),
-            "amount": self._format_amount(today.get('amount')),
+            "amount": self._format_amount(today.get('amount'), code),
         }
 
         if realtime:
@@ -978,6 +1034,8 @@ Always display the correct English stock name at the beginning of your analysis.
                 "price": self._format_price(realtime.get('price')),
                 "volume_ratio": realtime.get('volume_ratio', 'N/A'),
                 "turnover_rate": self._format_percent(realtime.get('turnover_rate')),
+                "total_mv": self._format_amount(realtime.get('total_mv'), code),
+                "circ_mv": self._format_amount(realtime.get('circ_mv'), code),
                 "source": getattr(realtime.get('source'), 'value', realtime.get('source', 'N/A')),
             })
 
