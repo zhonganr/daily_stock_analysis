@@ -687,6 +687,15 @@ class GeminiAnalyzer:
             
         today = context.get('today', {})
         
+        # Detect market type for formatting decisions
+        market = self._get_market_type(code)
+        
+        # Build volume and amount rows only for non-forex markets
+        volume_amount_rows = ""
+        if market != 'forex':
+            volume_amount_rows = f"""| {labels['volume']} | {self._format_volume(today.get('volume'))} |
+| {labels['amount']} | {self._format_amount(today.get('amount'), code)} |"""
+        
         # ========== 构建决策仪表盘格式的输入 ==========
         prompt = f"""{labels['title']}
 
@@ -709,8 +718,7 @@ class GeminiAnalyzer:
 | {labels['high']} | {today.get('high', 'N/A')} 元 |
 | {labels['low']} | {today.get('low', 'N/A')} 元 |
 | {labels['pct_chg']} | {today.get('pct_chg', 'N/A')}% |
-| {labels['volume']} | {self._format_volume(today.get('volume'))} |
-| {labels['amount']} | {self._format_amount(today.get('amount'), code)} |
+{volume_amount_rows}
 
 {labels['ma_system']}
 | 均线 | 数值 | 说明 |
@@ -953,16 +961,16 @@ Always display the correct English stock name at the beginning of your analysis.
         # Detect market to determine currency
         market = self._get_market_type(code)
         
-        # Map market to currency suffix
+        # Map market to currency suffix (uppercase)
         currency_map = {
-            'us': 'usd',
-            'eu': 'eur',
-            'hk': 'hkd',
-            'cn': 'yuan',
-            'forex': 'cny',
-            'unknown': 'yuan'
+            'us': 'USD',
+            'eu': 'EUR',
+            'hk': 'HKD',
+            'cn': 'CNY',
+            'forex': 'CNY',
+            'unknown': 'CNY'
         }
-        currency = currency_map.get(market, 'yuan')
+        currency = currency_map.get(market, 'CNY')
         
         # Format with B/M/units notation
         if amount >= 1e8:
