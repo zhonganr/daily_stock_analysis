@@ -178,6 +178,18 @@ class YfinanceFetcher(BaseFetcher):
         3. 处理返回数据
         """
         import yfinance as yf
+        from .akshare_fetcher import _is_euronext_code
+        from .us_index_mapping import KNOWN_EURONEXT_STOCKS
+        
+        # 检查是否为 Euronext 股票（yfinance 对欧洲股票数据支持不完整）
+        # 欧洲股票应优先使用其他数据源（如 AKShare）
+        code_check = stock_code.strip().upper()
+        if code_check in KNOWN_EURONEXT_STOCKS or _is_euronext_code(code_check):
+            raise DataFetchError(
+                f"Euronext 股票 {stock_code} (如 BNP.PA、OR.PA 等) 不支持通过 YfinanceFetcher 获取数据。"
+                f"推荐：(1) 使用带市场后缀的格式如 BNP.PA；(2) 配置其他数据源如 AKShare；"
+                f"(3) 考虑使用美股、港股或 A 股代码进行分析。"
+            )
         
         # 转换代码格式
         yf_code = self._convert_stock_code(stock_code)
