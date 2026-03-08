@@ -1282,7 +1282,7 @@ class NotificationService(
     # Display name mapping for realtime data sources
     _SOURCE_DISPLAY_NAMES = {
         "yfinance": "Yahoo Finance",
-        "fallback": "降级兜底",
+        "fallback": "Fallback",
     }
 
     def _append_market_snapshot(self, lines: List[str], result: AnalysisResult) -> None:
