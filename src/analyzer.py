@@ -98,10 +98,56 @@ STOCK_NAME_MAP = {
     'ASML.AS': 'ASML',
     
     # === Forex Pairs (English format) ===
+    # EUR pairs (欧元对)
+    'EURUSD': 'EUR/USD',
+    'EURUSD=X': 'EUR/USD',
+    'USDEUR': 'EUR/USD',
+    'EURGBP': 'EUR/GBP',
+    'EURGBP=X': 'EUR/GBP',
+    'EURJPY': 'EUR/JPY',
+    'EURJPY=X': 'EUR/JPY',
+    'EURCHF': 'EUR/CHF',
+    'EURCHF=X': 'EUR/CHF',
+    'EURCAD': 'EUR/CAD',
+    'EURCAD=X': 'EUR/CAD',
+    'EURAUD': 'EUR/AUD',
+    'EURAUD=X': 'EUR/AUD',
+    'EURNZD': 'EUR/NZD',
+    'EURNZD=X': 'EUR/NZD',
     'EURCNY': 'EUR/CNY',
     'EURCNY=X': 'EUR/CNY',
+    
+    # CNY pairs (人民币对)
     'USDCNY': 'USD/CNY',
     'USDCNY=X': 'USD/CNY',
+    'GBPCNY': 'GBP/CNY',
+    'GBPCNY=X': 'GBP/CNY',
+    'JPYCNY': 'JPY/CNY',
+    'JPYCNY=X': 'JPY/CNY',
+    'CHFCNY': 'CHF/CNY',
+    'CHFCNY=X': 'CHF/CNY',
+    'CADCNY': 'CAD/CNY',
+    'CADCNY=X': 'CAD/CNY',
+    'AUDCNY': 'AUD/CNY',
+    'AUDCNY=X': 'AUD/CNY',
+    'NZDCNY': 'NZD/CNY',
+    'NZDCNY=X': 'NZD/CNY',
+    
+    # Other major pairs (其他主要货币对)
+    'GBPUSD': 'GBP/USD',
+    'GBPUSD=X': 'GBP/USD',
+    'USDJPY': 'USD/JPY',
+    'USDJPY=X': 'USD/JPY',
+    'USDCHF': 'USD/CHF',
+    'USDCHF=X': 'USD/CHF',
+    'USDCAD': 'USD/CAD',
+    'USDCAD=X': 'USD/CAD',
+    'AUDUSD': 'AUD/USD',
+    'AUDUSD=X': 'AUD/USD',
+    'NZDUSD': 'NZD/USD',
+    'NZDUSD=X': 'NZD/USD',
+    'GBPJPY': 'GBP/JPY',
+    'GBPJPY=X': 'GBP/JPY',
 }
 
 
@@ -530,17 +576,19 @@ class GeminiAnalyzer:
         
         # 如果模型不可用，返回默认结果
         if not self.is_available():
+            config = get_config()
+            is_en = config.report_language and config.report_language.lower() in ('en', 'english')
             return AnalysisResult(
                 code=code,
                 name=name,
                 sentiment_score=50,
-                trend_prediction='震荡',
-                operation_advice='持有',
-                confidence_level='低',
-                analysis_summary='AI 分析功能未启用（未配置 API Key）',
-                risk_warning='请配置 LLM API Key（GEMINI_API_KEY/ANTHROPIC_API_KEY/OPENAI_API_KEY）后重试',
+                trend_prediction='Oscillating' if is_en else '震荡',
+                operation_advice='Hold' if is_en else '持有',
+                confidence_level='Low' if is_en else '低',
+                analysis_summary='AI analysis feature is not enabled (API Key not configured)' if is_en else 'AI 分析功能未启用（未配置 API Key）',
+                risk_warning='Please configure LLM API Key (GEMINI_API_KEY/ANTHROPIC_API_KEY/OPENAI_API_KEY) and try again' if is_en else '请配置 LLM API Key（GEMINI_API_KEY/ANTHROPIC_API_KEY/OPENAI_API_KEY）后重试',
                 success=False,
-                error_message='LLM API Key 未配置',
+                error_message='LLM API Key not configured' if is_en else 'LLM API Key 未配置',
             )
         
         try:
@@ -591,16 +639,18 @@ class GeminiAnalyzer:
             return result
             
         except Exception as e:
-            logger.error(f"AI 分析 {name}({code}) 失败: {e}")
+            logger.error(f"AI analysis {name}({code}) failed: {e}")
+            config = get_config()
+            is_en = config.report_language and config.report_language.lower() in ('en', 'english')
             return AnalysisResult(
                 code=code,
                 name=name,
                 sentiment_score=50,
-                trend_prediction='震荡',
-                operation_advice='持有',
-                confidence_level='低',
-                analysis_summary=f'分析过程出错: {str(e)[:100]}',
-                risk_warning='分析失败，请稍后重试或手动分析',
+                trend_prediction='Oscillating' if is_en else '震荡',
+                operation_advice='Hold' if is_en else '持有',
+                confidence_level='Low' if is_en else '低',
+                analysis_summary=f'Analysis error: {str(e)[:100]}' if is_en else f'分析过程出错: {str(e)[:100]}',
+                risk_warning='Analysis failed. Please try again later or analyze manually' if is_en else '分析失败，请稍后重试或手动分析',
                 success=False,
                 error_message=str(e),
             )
