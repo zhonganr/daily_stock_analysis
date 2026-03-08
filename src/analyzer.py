@@ -46,28 +46,28 @@ STOCK_NAME_MAP = {
     '601166': '兴业银行',
     '600028': '中国石化',
 
-    # === 美股 ===
-    'AAPL': '苹果',
-    'TSLA': '特斯拉',
-    'MSFT': '微软',
-    'GOOGL': '谷歌A',
-    'GOOG': '谷歌C',
-    'AMZN': '亚马逊',
-    'NVDA': '英伟达',
+    # === US Stocks (English names) ===
+    'AAPL': 'Apple',
+    'TSLA': 'Tesla',
+    'MSFT': 'Microsoft',
+    'GOOGL': 'Alphabet A',
+    'GOOG': 'Alphabet C',
+    'AMZN': 'Amazon',
+    'NVDA': 'Nvidia',
     'META': 'Meta',
     'AMD': 'AMD',
-    'INTC': '英特尔',
-    'BABA': '阿里巴巴',
-    'PDD': '拼多多',
-    'JD': '京东',
-    'BIDU': '百度',
-    'NIO': '蔚来',
-    'XPEV': '小鹏汽车',
-    'LI': '理想汽车',
+    'INTC': 'Intel',
+    'BABA': 'Alibaba',
+    'PDD': 'Pinduoduo',
+    'JD': 'JD.com',
+    'BIDU': 'Baidu',
+    'NIO': 'NIO',
+    'XPEV': 'XPeng',
+    'LI': 'Li Auto',
     'COIN': 'Coinbase',
     'MSTR': 'MicroStrategy',
 
-    # === 港股 (5位数字) ===
+    # === Hong Kong Stocks (Chinese names) ===
     '00700': '腾讯控股',
     '03690': '美团',
     '01810': '小米集团',
@@ -83,7 +83,7 @@ STOCK_NAME_MAP = {
     '00941': '中国移动',
     '00883': '中国海洋石油',
     
-    # === Euronext (欧洲) ===
+    # === Euronext (Europe - English names) ===
     'BNP': 'BNP Paribas',
     'BNP.PA': 'BNP Paribas',
     'TTE': 'TotalEnergies',
@@ -97,7 +97,7 @@ STOCK_NAME_MAP = {
     'ASML': 'ASML',
     'ASML.AS': 'ASML',
     
-    # === Forex (外汇对) ===
+    # === Forex Pairs (English format) ===
     'EURCNY': 'EUR/CNY',
     'EURCNY=X': 'EUR/CNY',
     'USDCNY': 'USD/CNY',
