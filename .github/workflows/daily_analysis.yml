@@ -16,7 +16,7 @@ on:
         options:
           - full          # Full analysis (stocks + market)
           - market-only   # Market review only
-          - stocks-only   # Stock analysis only
+          - products-only   # Stock analysis only
       force_run:
         description: 'Force run (skip trading day check)'
         required: false
@@ -215,7 +215,7 @@ jobs:
           # Execute analysis
           if [ "$MODE" = "market-only" ]; then
             python main.py --market-review $FORCE_RUN_ARG
-          elif [ "$MODE" = "stocks-only" ]; then
+          elif [ "$MODE" = "products-only" ]; then
             python main.py --no-market-review $FORCE_RUN_ARG
           else
             python main.py $FORCE_RUN_ARG

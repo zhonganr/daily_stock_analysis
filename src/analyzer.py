@@ -828,7 +828,17 @@ No recent news found for this stock. Please analyze mainly based on technical da
 请为 **{stock_name}({code})** 生成【决策仪表盘】，严格按照 JSON 格式输出。
 """
         if context.get('is_index_etf'):
-            prompt += """
+            if is_en:
+                prompt += """
+> ⚠️ **Index/ETF Analysis Constraints**: This is an index-tracking ETF or market index.
+> - Risk analysis focuses only on: **Index performance, tracking error, market liquidity**
+> - Strictly forbidden to include fund company litigation, reputation, and management changes in risk alerts
+> - Performance outlook based on **overall performance of index constituents**, not fund company financials
+> - No fund manager related corporate operational risks in `risk_alerts`
+
+"""
+            else:
+                prompt += """
 > ⚠️ **指数/ETF 分析约束**：该标的为指数跟踪型 ETF 或市场指数。
 > - 风险分析仅关注：**指数走势、跟踪误差、市场流动性**
 > - 严禁将基金公司的诉讼、声誉、高管变动纳入风险警报
@@ -836,9 +846,30 @@ No recent news found for this stock. Please analyze mainly based on technical da
 > - `risk_alerts` 中不得出现基金管理人相关的公司经营风险
 
 """
-        prompt += f"""
+        if context.get('is_en'):
+            prompt += f"""
+### ⚠️ Stock Analysis Requirements
+Ensure correct stock name format as "Stock Name (Code)", e.g., "Apple (AAPL)".
+Always display the correct English stock name at the beginning of your analysis.
+
+### Critical Focus Points (Must Address):
+1. ❓ Does it satisfy MA5 > MA10 > MA20 bullish alignment?
+2. ❓ Is the current deviation rate within safe range (<5%)? —— If >5%, mark "DO NOT CHASE"
+3. ❓ Do volume patterns match (pullback with shrinking volume / breakout with expanding)?
+4. ❓ Is the chip structure healthy?
+5. ❓ Any major negative catalysts? (insider selling, regulatory penalties, earnings miss)
+
+### Decision Dashboard Requirements:
+- **Stock Name**: Must display correct English name (e.g., "Apple" not "Stock AAPL")
+- **Core Conclusion**: One sentence - BUY / SELL / WAIT
+- **Position Strategy**: Recommendations for empty positions vs. holding positions
+- **Specific Price Targets**: Entry price, stop-loss price, target price (precise to cent)
+- **Checklist**: Mark each item with ✅ / ⚠️ / ❌
+            """
+        else:
+            prompt += f"""
 ### ⚠️ 重要：输出正确的股票名称格式
-正确的股票名称格式为“股票名称（股票代码）”，例如“贵州茅台（600519）”。
+正确的股票名称格式为"股票名称（股票代码）"，例如"贵州茅台（600519）"。
 如果上方显示的股票名称为"股票{code}"或不正确，请在分析开头**明确输出该股票的正确中文全称**。
 
 ### 重点关注（必须明确回答）：
@@ -854,13 +885,9 @@ No recent news found for this stock. Please analyze mainly based on technical da
 - **持仓分类建议**：空仓者怎么做 vs 持仓者怎么做
 - **具体狙击点位**：买入价、止损价、目标价（精确到分）
 - **检查清单**：每项用 ✅/⚠️/❌ 标记
+            """
 
-请输出完整的 JSON 格式决策仪表盘。"""
-        
-        return prompt
-    
-    def _format_volume(self, volume: Optional[float]) -> str:
-        """格式化成交量显示"""
+
         if volume is None:
             return 'N/A'
         if volume >= 1e8:
