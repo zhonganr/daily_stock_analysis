@@ -849,97 +849,97 @@ class NotificationService(
                             f"| MA5 | {price_data.get('ma5', 'N/A')} |",
                             f"| MA10 | {price_data.get('ma10', 'N/A')} |",
                             f"| MA20 | {price_data.get('ma20', 'N/A')} |",
-                            f"| 乖离率(MA5) | {price_data.get('bias_ma5', 'N/A')}% {bias_emoji}{bias_status} |",
-                            f"| 支撑位 | {price_data.get('support_level', 'N/A')} |",
-                            f"| 压力位 | {price_data.get('resistance_level', 'N/A')} |",
+                            f"| Bias(MA5) | {price_data.get('bias_ma5', 'N/A')}% {bias_emoji}{bias_status} |",
+                            f"| Support Level | {price_data.get('support_level', 'N/A')} |",
+                            f"| Resistance Level | {price_data.get('resistance_level', 'N/A')} |",
                             "",
                         ])
-                    # 量能分析
+                    # Volume Analysis
                     if vol_data:
                         report_lines.extend([
-                            f"**量能**: 量比 {vol_data.get('volume_ratio', 'N/A')} ({vol_data.get('volume_status', '')}) | 换手率 {vol_data.get('turnover_rate', 'N/A')}%",
+                            f"**Volume**: Volume Ratio {vol_data.get('volume_ratio', 'N/A')} ({vol_data.get('volume_status', '')}) | Turnover Rate {vol_data.get('turnover_rate', 'N/A')}%",
                             f"💡 *{vol_data.get('volume_meaning', '')}*",
                             "",
                         ])
-                    # 筹码结构
+                    # Chip Distribution
                     if chip_data:
                         chip_health = chip_data.get('chip_health', 'N/A')
-                        chip_emoji = "✅" if chip_health == "健康" else ("⚠️" if chip_health == "一般" else "🚨")
+                        chip_emoji = "✅" if chip_health == "healthy" else ("⚠️" if chip_health == "normal" else "🚨")
                         report_lines.extend([
-                            f"**筹码**: 获利比例 {chip_data.get('profit_ratio', 'N/A')} | 平均成本 {chip_data.get('avg_cost', 'N/A')} | 集中度 {chip_data.get('concentration', 'N/A')} {chip_emoji}{chip_health}",
+                            f"**Chip Distribution**: Profit Ratio {chip_data.get('profit_ratio', 'N/A')} | Avg Cost {chip_data.get('avg_cost', 'N/A')} | Concentration {chip_data.get('concentration', 'N/A')} {chip_emoji}{chip_health}",
                             "",
                         ])
                 
-                # ========== 作战计划 ==========
+                # ========== Battle Plan ==========
                 battle = dashboard.get('battle_plan', {}) if dashboard else {}
                 if battle:
                     report_lines.extend([
-                        "### 🎯 作战计划",
+                        "### 🎯 Battle Plan",
                         "",
                     ])
-                    # 狙击点位
+                    # Sniper Points
                     sniper = battle.get('sniper_points', {})
                     if sniper:
                         report_lines.extend([
-                            "**📍 狙击点位**",
+                            "**📍 Sniper Points**",
                             "",
-                            "| 点位类型 | 价格 |",
+                            "| Point Type | Price |",
                             "|---------|------|",
-                            f"| 🎯 理想买入点 | {self._clean_sniper_value(sniper.get('ideal_buy', 'N/A'))} |",
-                            f"| 🔵 次优买入点 | {self._clean_sniper_value(sniper.get('secondary_buy', 'N/A'))} |",
-                            f"| 🛑 止损位 | {self._clean_sniper_value(sniper.get('stop_loss', 'N/A'))} |",
-                            f"| 🎊 目标位 | {self._clean_sniper_value(sniper.get('take_profit', 'N/A'))} |",
+                            f"| 🎯 Ideal Buy Point | {self._clean_sniper_value(sniper.get('ideal_buy', 'N/A'))} |",
+                            f"| 🔵 Secondary Buy Point | {self._clean_sniper_value(sniper.get('secondary_buy', 'N/A'))} |",
+                            f"| 🛑 Stop Loss | {self._clean_sniper_value(sniper.get('stop_loss', 'N/A'))} |",
+                            f"| 🎊 Target Price | {self._clean_sniper_value(sniper.get('take_profit', 'N/A'))} |",
                             "",
                         ])
-                    # 仓位策略
+                    # Position Strategy
                     position = battle.get('position_strategy', {})
                     if position:
                         report_lines.extend([
-                            f"**💰 仓位建议**: {position.get('suggested_position', 'N/A')}",
-                            f"- 建仓策略: {position.get('entry_plan', 'N/A')}",
-                            f"- 风控策略: {position.get('risk_control', 'N/A')}",
+                            f"**💰 Position Advice**: {position.get('suggested_position', 'N/A')}",
+                            f"- Entry Plan: {position.get('entry_plan', 'N/A')}",
+                            f"- Risk Control: {position.get('risk_control', 'N/A')}",
                             "",
                         ])
-                    # 检查清单
+                    # Action Checklist
                     checklist = battle.get('action_checklist', []) if battle else []
                     if checklist:
                         report_lines.extend([
-                            "**✅ 检查清单**",
+                            "**✅ Action Checklist**",
                             "",
                         ])
                         for item in checklist:
                             report_lines.append(f"- {item}")
                         report_lines.append("")
                 
-                # 如果没有 dashboard，显示传统格式
+                # If no dashboard, show traditional format
                 if not dashboard:
-                    # 操作理由
+                    # Operation Rationale
                     if result.buy_reason:
                         report_lines.extend([
-                            f"**💡 操作理由**: {result.buy_reason}",
+                            f"**💡 Operation Rationale**: {result.buy_reason}",
                             "",
                         ])
-                    # 风险提示
+                    # Risk Warning
                     if result.risk_warning:
                         report_lines.extend([
-                            f"**⚠️ 风险提示**: {result.risk_warning}",
+                            f"**⚠️ Risk Warning**: {result.risk_warning}",
                             "",
                         ])
-                    # 技术面分析
+                    # Technical Analysis
                     if result.ma_analysis or result.volume_analysis:
                         report_lines.extend([
-                            "### 📊 技术面",
+                            "### 📊 Technical Analysis",
                             "",
                         ])
                         if result.ma_analysis:
-                            report_lines.append(f"**均线**: {result.ma_analysis}")
+                            report_lines.append(f"**MA System**: {result.ma_analysis}")
                         if result.volume_analysis:
-                            report_lines.append(f"**量能**: {result.volume_analysis}")
+                            report_lines.append(f"**Volume**: {result.volume_analysis}")
                         report_lines.append("")
-                    # 消息面
+                    # News Sentiment
                     if result.news_summary:
                         report_lines.extend([
-                            "### 📰 消息面",
+                            "### 📰 News Sentiment",
                             f"{result.news_summary}",
                             "",
                         ])
@@ -1291,9 +1291,9 @@ class NotificationService(
             return
 
         lines.extend([
-            "### 📈 当日行情",
+            "### 📈 Daily Market Data",
             "",
-            "| 收盘 | 昨收 | 开盘 | 最高 | 最低 | 涨跌幅 | 涨跌额 | 振幅 | 成交量 | 成交额 |",
+            "| Close | Prev Close | Open | High | Low | Change % | Change | Amplitude | Volume | Amount |",
             "|------|------|------|------|------|-------|-------|------|--------|--------|",
             f"| {snapshot.get('close', 'N/A')} | {snapshot.get('prev_close', 'N/A')} | "
             f"{snapshot.get('open', 'N/A')} | {snapshot.get('high', 'N/A')} | "
@@ -1307,7 +1307,7 @@ class NotificationService(
             display_source = self._SOURCE_DISPLAY_NAMES.get(raw_source, raw_source)
             lines.extend([
                 "",
-                "| 当前价 | 量比 | 换手率 | 行情来源 |",
+                "| Current Price | Volume Ratio | Turnover Rate | Source |",
                 "|-------|------|--------|----------|",
                 f"| {snapshot.get('price', 'N/A')} | {snapshot.get('volume_ratio', 'N/A')} | "
                 f"{snapshot.get('turnover_rate', 'N/A')} | {display_source} |",
