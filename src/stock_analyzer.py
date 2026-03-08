@@ -32,51 +32,51 @@ logger = logging.getLogger(__name__)
 class TrendStatus(Enum):
     """趋势状态枚举"""
     STRONG_BULL = "强势多头"      # MA5 > MA10 > MA20，且间距扩大
-    BULL = "多头排列"             # MA5 > MA10 > MA20
-    WEAK_BULL = "弱势多头"        # MA5 > MA10，但 MA10 < MA20
-    CONSOLIDATION = "盘整"        # 均线缠绕
-    WEAK_BEAR = "弱势空头"        # MA5 < MA10，但 MA10 > MA20
-    BEAR = "空头排列"             # MA5 < MA10 < MA20
-    STRONG_BEAR = "强势空头"      # MA5 < MA10 < MA20，且间距扩大
+    BULL = "Bullish Alignment"             # MA5 > MA10 > MA20
+    WEAK_BULL = "Weak Bullish"        # MA5 > MA10, but MA10 < MA20
+    CONSOLIDATION = "Consolidation"        # MA lines intertwined
+    WEAK_BEAR = "Weak Bearish"        # MA5 < MA10, but MA10 > MA20
+    BEAR = "Bearish Alignment"             # MA5 < MA10 < MA20
+    STRONG_BEAR = "Strong Bearish"      # MA5 < MA10 < MA20, with widening spread
 
 
 class VolumeStatus(Enum):
-    """量能状态枚举"""
-    HEAVY_VOLUME_UP = "放量上涨"       # 量价齐升
-    HEAVY_VOLUME_DOWN = "放量下跌"     # 放量杀跌
-    SHRINK_VOLUME_UP = "缩量上涨"      # 无量上涨
-    SHRINK_VOLUME_DOWN = "缩量回调"    # 缩量回调（好）
-    NORMAL = "量能正常"
+    """Volume Status Enum"""
+    HEAVY_VOLUME_UP = "Heavy Volume Up"       # 量价齐升
+    HEAVY_VOLUME_DOWN = "Heavy Volume Down"     # 放量杀跌
+    SHRINK_VOLUME_UP = "Shrink Volume Up"      # 无量上涨
+    SHRINK_VOLUME_DOWN = "Shrink Volume Pullback"    # 缩量回调（好）
+    NORMAL = "Normal Volume"
 
 
 class BuySignal(Enum):
-    """买入信号枚举"""
-    STRONG_BUY = "强烈买入"       # 多条件满足
-    BUY = "买入"                  # 基本条件满足
-    HOLD = "持有"                 # 已持有可继续
-    WAIT = "观望"                 # 等待更好时机
-    SELL = "卖出"                 # 趋势转弱
-    STRONG_SELL = "强烈卖出"      # 趋势破坏
+    """Buy Signal Enum"""
+    STRONG_BUY = "Strong Buy"       # 多条件满足
+    BUY = "Buy"                  # 基本条件满足
+    HOLD = "Hold"                 # 已持有可继续
+    WAIT = "Wait"                 # 等待更好时机
+    SELL = "Sell"                 # 趋势转弱
+    STRONG_SELL = "Strong Sell"      # 趋势破坏
 
 
 class MACDStatus(Enum):
-    """MACD状态枚举"""
-    GOLDEN_CROSS_ZERO = "零轴上金叉"      # DIF上穿DEA，且在零轴上方
-    GOLDEN_CROSS = "金叉"                # DIF上穿DEA
-    BULLISH = "多头"                    # DIF>DEA>0
-    CROSSING_UP = "上穿零轴"             # DIF上穿零轴
-    CROSSING_DOWN = "下穿零轴"           # DIF下穿零轴
-    BEARISH = "空头"                    # DIF<DEA<0
-    DEATH_CROSS = "死叉"                # DIF下穿DEA
+    """MACD Status Enum"""
+    GOLDEN_CROSS_ZERO = "Golden Cross Above Zero"      # DIF上穿DEA，且在零轴上方
+    GOLDEN_CROSS = "Golden Cross"                # DIF上穿DEA
+    BULLISH = "Bullish"                    # DIF>DEA>0
+    CROSSING_UP = "Crossing Up Zero"             # DIF上穿零轴
+    CROSSING_DOWN = "Crossing Down Zero"           # DIF下穿零轴
+    BEARISH = "Bearish"                    # DIF<DEA<0
+    DEATH_CROSS = "Death Cross"                # DIF下穿DEA
 
 
 class RSIStatus(Enum):
-    """RSI状态枚举"""
-    OVERBOUGHT = "超买"        # RSI > 70
-    STRONG_BUY = "强势买入"    # 50 < RSI < 70
-    NEUTRAL = "中性"          # 40 <= RSI <= 60
-    WEAK = "弱势"             # 30 < RSI < 40
-    OVERSOLD = "超卖"         # RSI < 30
+    """RSI Status Enum"""
+    OVERBOUGHT = "Overbought"        # RSI > 70
+    STRONG_BUY = "Strong Buy"    # 50 < RSI < 70
+    NEUTRAL = "Neutral"          # 40 <= RSI <= 60
+    WEAK = "Weak"             # 30 < RSI < 40
+    OVERSOLD = "Oversold"         # RSI < 30
 
 
 @dataclass
@@ -372,16 +372,16 @@ class StockTrendAnalyzer:
             
             if curr_spread > prev_spread and curr_spread > 5:
                 result.trend_status = TrendStatus.STRONG_BEAR
-                result.ma_alignment = "强势空头排列，均线发散下行"
+                result.ma_alignment = "Strong Bearish - MA lines diverging downward"
                 result.trend_strength = 10
             else:
                 result.trend_status = TrendStatus.BEAR
-                result.ma_alignment = "空头排列 MA5<MA10<MA20"
+                result.ma_alignment = "Bearish Alignment MA5<MA10<MA20"
                 result.trend_strength = 25
                 
         elif ma5 < ma10 and ma10 >= ma20:
             result.trend_status = TrendStatus.WEAK_BEAR
-            result.ma_alignment = "弱势空头，MA5<MA10 但 MA10≥MA20"
+            result.ma_alignment = "Weak Bearish - MA5<MA10 but MA10≥MA20"
             result.trend_strength = 40
             
         else:

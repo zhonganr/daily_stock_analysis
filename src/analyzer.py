@@ -846,7 +846,7 @@ No recent news found for this stock. Please analyze mainly based on technical da
 > - `risk_alerts` 中不得出现基金管理人相关的公司经营风险
 
 """
-        if context.get('is_en'):
+        if is_en:
             prompt += f"""
 ### ⚠️ Stock Analysis Requirements
 Ensure correct stock name format as "Stock Name (Code)", e.g., "Apple (AAPL)".
