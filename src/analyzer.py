@@ -23,6 +23,7 @@ from litellm import Router
 from src.agent.llm_adapter import get_thinking_extra_body
 from src.analyzer_prompts import get_system_prompt
 from src.config import Config, get_config
+from data_provider.us_index_mapping import is_forex_pair
 
 logger = logging.getLogger(__name__)
 
@@ -974,8 +975,8 @@ Always display the correct English stock name at the beginning of your analysis.
         
         code_upper = code.upper()
         
-        # Forex pairs (EURCNY, USDCNY, etc.)
-        if code_upper in ['EURCNY', 'EURCNY=X', 'USDCNY', 'USDCNY=X'] or (len(code_upper) == 6 and code_upper.endswith('NY')):
+        # Forex pairs (use proper detection from us_index_mapping)
+        if is_forex_pair(code_upper):
             return 'forex'
         
         # Hong Kong stocks (5-digit starting with 0, or known HK codes)
