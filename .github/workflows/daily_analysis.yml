@@ -16,7 +16,7 @@ on:
         options:
           - full          # Full analysis (stocks + market)
           - market-only   # Market review only
-          - products-only   # Stock analysis only
+          - products-only   # Product analysis only
       force_run:
         description: 'Force run (skip trading day check)'
         required: false

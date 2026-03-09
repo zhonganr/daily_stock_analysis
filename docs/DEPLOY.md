@@ -384,7 +384,7 @@ git push
 4. 选择运行模式：
    - `full` - 完整分析（股票+大盘）
    - `market-only` - 仅大盘复盘
-   - `products-only` - 仅股票分析
+   - `products-only` - 仅股票/外汇分析
 5. 点击绿色 **"Run workflow"** 按钮
 
 #### 5. 查看执行日志

@@ -384,7 +384,7 @@ git push
 4. Select run mode:
    - `full` - Full analysis (stocks + market)
    - `market-only` - Market review only
-   - `products-only` - Stock analysis only
+   - `products-only` - Product analysis only
 5. Click green **"Run workflow"** button
 
 #### 5. View Execution Logs

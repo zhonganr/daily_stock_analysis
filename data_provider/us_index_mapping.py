@@ -50,12 +50,55 @@ GLOBAL_MARKET_SUFFIXES = {
 
 # 支持的外汇对映射 -> (Yahoo Finance 符号, 中文名称, 英文名称)
 FOREX_PAIRS = {
+    # EUR pairs (欧元对)
+    'EURUSD': ('EURUSD=X', '欧元/美元', 'EUR/USD'),
+    'EURUSD=X': ('EURUSD=X', '欧元/美元', 'EUR/USD'),
+    'EURGBP': ('EURGBP=X', '欧元/英镑', 'EUR/GBP'),
+    'EURGBP=X': ('EURGBP=X', '欧元/英镑', 'EUR/GBP'),
+    'EURJPY': ('EURJPY=X', '欧元/日元', 'EUR/JPY'),
+    'EURJPY=X': ('EURJPY=X', '欧元/日元', 'EUR/JPY'),
+    'EURCHF': ('EURCHF=X', '欧元/瑞郎', 'EUR/CHF'),
+    'EURCHF=X': ('EURCHF=X', '欧元/瑞郎', 'EUR/CHF'),
+    'EURCAD': ('EURCAD=X', '欧元/加元', 'EUR/CAD'),
+    'EURCAD=X': ('EURCAD=X', '欧元/加元', 'EUR/CAD'),
+    'EURAUD': ('EURAUD=X', '欧元/澳元', 'EUR/AUD'),
+    'EURAUD=X': ('EURAUD=X', '欧元/澳元', 'EUR/AUD'),
+    'EURNZD': ('EURNZD=X', '欧元/纽元', 'EUR/NZD'),
+    'EURNZD=X': ('EURNZD=X', '欧元/纽元', 'EUR/NZD'),
     'EURCNY': ('EURCNY=X', '欧元/人民币', 'EUR/CNY'),
     'EURCNY=X': ('EURCNY=X', '欧元/人民币', 'EUR/CNY'),
+    
+    # CNY pairs (人民币对)
     'USDCNY': ('USDCNY=X', '美元/人民币', 'USD/CNY'),
     'USDCNY=X': ('USDCNY=X', '美元/人民币', 'USD/CNY'),
-    'EUR': ('EURCNY=X', '欧元/人民币', 'EUR/CNY'),  # 简写别名
-    'USD': ('USDCNY=X', '美元/人民币', 'USD/CNY'),  # 简写别名 (注意：与美股代码冲突，需要上下文判断)
+    'GBPCNY': ('GBPCNY=X', '英镑/人民币', 'GBP/CNY'),
+    'GBPCNY=X': ('GBPCNY=X', '英镑/人民币', 'GBP/CNY'),
+    'JPYCNY': ('JPYCNY=X', '日元/人民币', 'JPY/CNY'),
+    'JPYCNY=X': ('JPYCNY=X', '日元/人民币', 'JPY/CNY'),
+    'CHFCNY': ('CHFCNY=X', '瑞郎/人民币', 'CHF/CNY'),
+    'CHFCNY=X': ('CHFCNY=X', '瑞郎/人民币', 'CHF/CNY'),
+    'CADCNY': ('CADCNY=X', '加元/人民币', 'CAD/CNY'),
+    'CADCNY=X': ('CADCNY=X', '加元/人民币', 'CAD/CNY'),
+    'AUDCNY': ('AUDCNY=X', '澳元/人民币', 'AUD/CNY'),
+    'AUDCNY=X': ('AUDCNY=X', '澳元/人民币', 'AUD/CNY'),
+    'NZDCNY': ('NZDCNY=X', '纽元/人民币', 'NZD/CNY'),
+    'NZDCNY=X': ('NZDCNY=X', '纽元/人民币', 'NZD/CNY'),
+    
+    # Other major pairs (其他主要货币对)
+    'GBPUSD': ('GBPUSD=X', '英镑/美元', 'GBP/USD'),
+    'GBPUSD=X': ('GBPUSD=X', '英镑/美元', 'GBP/USD'),
+    'GBPJPY': ('GBPJPY=X', '英镑/日元', 'GBP/JPY'),
+    'GBPJPY=X': ('GBPJPY=X', '英镑/日元', 'GBP/JPY'),
+    'USDJPY': ('USDJPY=X', '美元/日元', 'USD/JPY'),
+    'USDJPY=X': ('USDJPY=X', '美元/日元', 'USD/JPY'),
+    'USDCHF': ('USDCHF=X', '美元/瑞郎', 'USD/CHF'),
+    'USDCHF=X': ('USDCHF=X', '美元/瑞郎', 'USD/CHF'),
+    'USDCAD': ('USDCAD=X', '美元/加元', 'USD/CAD'),
+    'USDCAD=X': ('USDCAD=X', '美元/加元', 'USD/CAD'),
+    'AUDUSD': ('AUDUSD=X', '澳元/美元', 'AUD/USD'),
+    'AUDUSD=X': ('AUDUSD=X', '澳元/美元', 'AUD/USD'),
+    'NZDUSD': ('NZDUSD=X', '纽元/美元', 'NZD/USD'),
+    'NZDUSD=X': ('NZDUSD=X', '纽元/美元', 'NZD/USD'),
 }
 
 # 已知 Euronext 股票映射（无后缀代码 -> (带后缀代码, 中文名称, 英文名称)）
@@ -272,15 +315,20 @@ def is_forex_pair(code: str) -> bool:
     
     # 检查是否匹配外汇对模式（6个字母或6个字母+Y/X后缀）
     if _FOREX_PATTERN.match(normalized):
-        # 进一步验证是否为真实的外汇对（基础货币和计价货币都是有效的）
-        # 对于现在支持的对：EURCNY, USDCNY
+        # 进一步验证是否为真实的外汇对
+        supported_pairs = [
+            'EURUSD', 'EURGBP', 'EURJPY', 'EURCHF', 'EURCAD', 'EURAUD', 'EURNZD', 'EURCNY',
+            'USDCNY', 'GBPCNY', 'JPYCNY', 'CHFCNY', 'CADCNY', 'AUDCNY', 'NZDCNY',
+            'GBPUSD', 'GBPJPY', 'USDJPY', 'USDCHF', 'USDCAD', 'AUDUSD', 'NZDUSD'
+        ]
+        
         if len(normalized) == 6:
-            # EURCNY, USDCNY 等
-            return normalized in ['EURCNY', 'USDCNY', 'GBPCNY', 'JPYCNY', 'CHFCNY']
+            # 6字母形式：EURUSD, EURCNY 等
+            return normalized in supported_pairs
         else:
-            # EURCNY=X, USDCNY=X 等
+            # 有 =X 或 Y 后缀形式：EURUSD=X, EURCNY=X 等
             base = normalized[:-1]
-            return base in ['EURCNY', 'USDCNY', 'GBPCNY', 'JPYCNY', 'CHFCNY']
+            return base in supported_pairs
     
     return False
 
